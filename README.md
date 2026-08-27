@@ -1,5 +1,5 @@
 parc se compose de plusieurs zones sécurisées, du personnel spécialisé
-but : gerer tous les animaux présent dans le parc 
+but : gérer tous les animaux présent dans le parc 
 chaque créature possède ses propres caractéristiques et appartient à une espèce et on un niveau de dangerosité
 plusieurs types de zones sécurisés : aquatiques, grillagé et médicales d'isolement
 Tous les animaux ne peuvent évidemment pas être placés n’importe où.
@@ -15,5 +15,15 @@ On veut pas :
 
 On veut :
 	garder un historique des : nourrissage, soins médicaux, déplacements, surveillance, capture d'urgence, nettoyage des zones
-	Certaines opéations ne peuvent plus être modifier une fois terminée
-	Empecher la suppression accidentelles de données encore utilisées ailleurs dans le système
+	Certaines opérations ne peuvent plus être modifier une fois terminée
+	Empêcher la suppression accidentelles de données encore utilisées ailleurs dans le système
+
+Règle de Gestions :
+• dépassement de capacité ;
+• incompatibilité entre espèces ;
+• mauvaise affectation d’un soigneur ;
+• intervention impossible ;
+• conflit de planning ;
+• zone inadaptée ;
+• sécurité insuffisante.
+
