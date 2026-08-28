@@ -3,7 +3,7 @@ package net.ent.etnc.jurassicpark.services.impl;
 import net.ent.etnc.jurassicpark.models.Animal;
 import net.ent.etnc.jurassicpark.repositories.AnimalRepository;
 import net.ent.etnc.jurassicpark.services.AnimalService;
-import net.ent.etnc.jurassicpark.services.common.AbstractService;
+import net.ent.etnc.jurassicpark.services.commons.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
