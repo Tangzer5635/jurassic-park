@@ -1,3 +1,17 @@
 spring:
   application:
     name: jurassic-park
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jurassic_park
+    username: postgres
+    password: azerty+35
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+  jackson:
+    default-property-inclusion: non_null
