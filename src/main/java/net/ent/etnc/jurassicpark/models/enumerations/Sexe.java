@@ -1,4 +1,4 @@
-package net.ent.etnc.jurassicpark.models;
+package net.ent.etnc.jurassicpark.models.enumerations;
 
 public enum Sexe {
 
