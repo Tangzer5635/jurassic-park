@@ -17,4 +17,5 @@ public class EnclosDto {
     private EtatEnclos etat;
     private SecuriteEnclos niveauSecurite;
     private TypeEnclos type;
+    private Integer capaciteMax;
 }

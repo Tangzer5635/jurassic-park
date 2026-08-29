@@ -3,9 +3,11 @@ package net.ent.etnc.jurassicpark.dtos.assemblers;
 import net.ent.etnc.jurassicpark.dtos.InterventionRequestDto;
 import net.ent.etnc.jurassicpark.dtos.InterventionResponseDto;
 import net.ent.etnc.jurassicpark.models.Animal;
+import net.ent.etnc.jurassicpark.models.Enclos;
 import net.ent.etnc.jurassicpark.models.Intervention;
 import net.ent.etnc.jurassicpark.models.Personnel;
 import net.ent.etnc.jurassicpark.services.AnimalService;
+import net.ent.etnc.jurassicpark.services.EnclosService;
 import net.ent.etnc.jurassicpark.services.PersonnelService;
 import net.ent.etnc.jurassicpark.services.commons.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,14 +23,18 @@ public class InterventionAssembler {
     private final PersonnelAssembler personnelAssembler;
     private final AnimalService animalService;
     private final PersonnelService personnelService;
+    private final EnclosAssembler enclosAssembler;
+    private final EnclosService enclosService;
 
     @Autowired
     public InterventionAssembler(AnimalAssembler animalAssembler, PersonnelAssembler personnelAssembler,
-                                 AnimalService animalService, PersonnelService personnelService) {
+                                 AnimalService animalService, PersonnelService personnelService, EnclosAssembler enclosAssembler, EnclosService enclosService) {
         this.animalAssembler = animalAssembler;
         this.personnelAssembler = personnelAssembler;
         this.animalService = animalService;
         this.personnelService = personnelService;
+        this.enclosAssembler = enclosAssembler;
+        this.enclosService = enclosService;
     }
 
     public InterventionResponseDto toDto(Intervention intervention) {
@@ -41,6 +47,9 @@ public class InterventionAssembler {
                 .type(intervention.getType())
                 .animals(animalAssembler.toDtos(intervention.getAnimals()).stream().toList())
                 .personnels(personnelAssembler.toDtos(intervention.getPersonnels()).stream().toList())
+                .enclos(intervention.getEnclos() == null
+                        ? null
+                        : enclosAssembler.toDto(intervention.getEnclos()))
                 .build();
     }
 
@@ -75,6 +84,14 @@ public class InterventionAssembler {
                 }
                 intervention.addPersonnel(optionalPersonnel.get());
             }
+        }
+
+        if (dto.getEnclosId() != null){
+            Optional<Enclos> optionalEnclos = enclosService.findById(dto.getEnclosId());
+            if (optionalEnclos.isEmpty()) {
+                throw new ServiceException("Enclos introuvable : " + dto.getEnclosId());
+            }
+            intervention.setEnclos(optionalEnclos.get());
         }
 
         return intervention;
