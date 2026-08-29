@@ -14,4 +14,9 @@ public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository>
     public EnclosServiceImpl(EnclosRepository enclosRepository) {
         super(enclosRepository);
     }
+
+    @Override
+    public boolean enclosVide(Long id) {
+        return false;
+    }
 }

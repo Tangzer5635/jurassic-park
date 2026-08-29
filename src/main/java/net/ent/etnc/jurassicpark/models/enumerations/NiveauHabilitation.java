@@ -9,7 +9,7 @@ public enum NiveauHabilitation {
 
     private final int niveauHabilitationInt;
 
-    private NiveauHabilitation(int niveauHabilitation) {
+    private NiveauHabilitation(int niveauHabilitationInt) {
         this.niveauHabilitationInt = niveauHabilitationInt;
     }
 
