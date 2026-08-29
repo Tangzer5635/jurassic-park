@@ -9,4 +9,7 @@ import java.time.LocalDateTime;
 public interface AnimalService extends Service<Animal, Long> {
 
     boolean animalEstDisponible(Long id, @NotNull(message = "dateDebut ne doit pas être null") LocalDateTime dateDebut, @NotNull(message = "dateFin ne doit pas être null") LocalDateTime dateFin);
+
+    boolean existeParEspece(Long especeId);
+    boolean existeParEnclos(Long enclosId);
 }

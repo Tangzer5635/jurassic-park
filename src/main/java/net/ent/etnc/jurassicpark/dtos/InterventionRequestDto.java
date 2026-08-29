@@ -22,4 +22,6 @@ public class InterventionRequestDto {
     private TypeIntervention type;
     private Set<Long> animalId;
     private Set<Long> personnelId;
+    private Long enclosId;
+
 }

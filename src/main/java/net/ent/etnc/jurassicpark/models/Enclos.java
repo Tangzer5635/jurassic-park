@@ -1,10 +1,7 @@
 package net.ent.etnc.jurassicpark.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import net.ent.etnc.jurassicpark.models.commons.AbstractPersistableWithIdSetter;
 import net.ent.etnc.jurassicpark.models.enumerations.EtatEnclos;
@@ -49,4 +46,11 @@ public class Enclos extends AbstractPersistableWithIdSetter<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private TypeEnclos type;
+
+    @Getter
+    @Setter
+    @NotNull(message = "capaciteMax ne doit pas être null")
+    @Min(value = 1, message = "capaciteMax doit être au moins 1")
+    @Column(name = "capacite_max", nullable = false)
+    private Integer capaciteMax;
 }

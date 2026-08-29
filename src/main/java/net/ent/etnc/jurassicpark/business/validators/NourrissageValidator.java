@@ -7,9 +7,11 @@ import net.ent.etnc.jurassicpark.business.rules.PersonnelQualifie;
 import net.ent.etnc.jurassicpark.models.Animal;
 import net.ent.etnc.jurassicpark.models.Intervention;
 import net.ent.etnc.jurassicpark.models.Personnel;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 
+@Component
 public class NourrissageValidator {
 
     private final PersonnelQualifie personnelQualifie;

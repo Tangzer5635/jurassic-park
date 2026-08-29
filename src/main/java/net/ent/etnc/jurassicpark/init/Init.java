@@ -8,14 +8,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @Component
 public class Init implements CommandLineRunner {
+
+    private static final int CAPACITE_ENCLOS = 6;
+    private static final int CAPACITE_QUARANTAINE = 2;
 
     private final Faker faker = new Faker(new java.util.Locale("fr"));
 
@@ -28,8 +33,11 @@ public class Init implements CommandLineRunner {
     // Références conservées entre les étapes : évite de deviner les IDs générés
     private final Map<NomEspece, List<Enclos>> enclosParEspece = new EnumMap<>(NomEspece.class);
     private final Map<NomEspece, Espece> especes = new EnumMap<>(NomEspece.class);
+    private final Map<Animal, Enclos> destinations = new HashMap<>();
     private final List<Enclos> enclosQuarantaine = new ArrayList<>();
+    private final List<Enclos> enclosLibres = new ArrayList<>();
     private final List<Animal> animaux = new ArrayList<>();
+    private final List<Animal> animauxCritiques = new ArrayList<>();
     private final List<Personnel> personnels = new ArrayList<>();
 
     private int compteurEnclos = 0;
@@ -97,11 +105,13 @@ public class Init implements CommandLineRunner {
         };
     }
 
-    private Enclos creerEnclos(TypeEnclos type, SecuriteEnclos securite) {
+    private Enclos creerEnclos(TypeEnclos type, SecuriteEnclos securite, int capacite) {
         Enclos enclos = new Enclos();
         enclos.setType(type);
         enclos.setNiveauSecurite(securite);
+        // ACTIF obligatoire : un enclos FERME, EVACUE ou en MAINTENANCE ne peut rien accueillir
         enclos.setEtat(EtatEnclos.ACTIF);
+        enclos.setCapaciteMax(capacite);
         // lettre = type, 1 chiffre = niveau de sécurité, 2 chiffres = numéro
         enclos.setCode("" + lettre(type)
                 + (securite.getSecuriteEnclos() / 10)
@@ -116,14 +126,21 @@ public class Init implements CommandLineRunner {
             SecuriteEnclos securite = nom.getDangerosite().getSecuriteMinimaleRequise();
 
             List<Enclos> lot = new ArrayList<>();
-            lot.add(creerEnclos(type, securite));
-            lot.add(creerEnclos(type, securite));
+            lot.add(creerEnclos(type, securite, CAPACITE_ENCLOS));
+            lot.add(creerEnclos(type, securite, CAPACITE_ENCLOS));
             this.enclosParEspece.put(nom, lot);
         }
 
         // Quarantaine : sécurité maximale, rattachée à aucune espèce
         for (int i = 0; i < 3; i++) {
-            this.enclosQuarantaine.add(creerEnclos(TypeEnclos.QUARANTAINE, SecuriteEnclos.MAXIMUM));
+            this.enclosQuarantaine.add(
+                    creerEnclos(TypeEnclos.QUARANTAINE, SecuriteEnclos.MAXIMUM, CAPACITE_QUARANTAINE));
+        }
+
+        // Enclos sans occupant : cibles des interventions de nettoyage
+        for (int i = 0; i < 3; i++) {
+            this.enclosLibres.add(
+                    creerEnclos(TypeEnclos.TERRESTRE, SecuriteEnclos.STANDARD, CAPACITE_ENCLOS));
         }
     }
 
@@ -147,8 +164,10 @@ public class Init implements CommandLineRunner {
         for (NomEspece nom : NomEspece.values()) {
             List<Enclos> disponibles = this.enclosParEspece.get(nom);
 
+            // 2 animaux par espèce, 1 par enclos : la capacité n'est jamais atteinte
             for (int j = 0; j < 2; j++) {
                 EtatSante etat = etatSante(compteur);
+                boolean isole = etat == EtatSante.EN_QUARANTAINE;
 
                 Animal animal = new Animal();
                 animal.setCode(String.format("%010d", compteur));
@@ -156,17 +175,23 @@ public class Init implements CommandLineRunner {
                 animal.setSexe(alea(Sexe.values()));
                 animal.setEtatSante(etat);
                 animal.setEspece(this.especes.get(nom));
-                animal.setEnclos(etat == EtatSante.EN_QUARANTAINE
+                animal.setEnclos(isole
                         ? this.enclosQuarantaine.get(compteur % this.enclosQuarantaine.size())
                         : disponibles.get(j));
 
-                this.animaux.add(this.animalService.create(animal));
+                Animal cree = this.animalService.create(animal);
+                this.animaux.add(cree);
+                // destination d'un futur déplacement : l'autre enclos de l'espèce
+                this.destinations.put(cree, disponibles.get(isole ? 0 : 1 - j));
+                if (nom.getDangerosite() == Dangerosite.CRITIQUE) {
+                    this.animauxCritiques.add(cree);
+                }
                 compteur++;
             }
         }
     }
 
-    /** Réparti de façon déterministe pour garantir des animaux à soigner. */
+    /** Réparti de façon déterministe pour garantir des animaux à soigner. Aucun DECEDE : ils ne se manipulent plus. */
     private EtatSante etatSante(int compteur) {
         if (compteur % 11 == 0) {
             return EtatSante.EN_QUARANTAINE;
@@ -203,17 +228,42 @@ public class Init implements CommandLineRunner {
         int compteur = 0;
         for (TypeIntervention type : TypeIntervention.values()) {
             for (int j = 0; j < 2; j++) {
-                EtatIntervention etat = alea(EtatIntervention.values());
+                // 1 intervention tous les 3 jours : aucun chevauchement de planning
+                LocalDateTime debut = LocalDate.now().minusDays(20).plusDays(compteur * 3L).atTime(9, 0);
 
                 Intervention intervention = new Intervention();
                 intervention.setType(type);
-                intervention.setEtat(etat);
                 intervention.setCode(lettre(type) + String.format("%09d", compteur));
-                intervention.setDateDebut(dateDebut(etat));
-                intervention.setDateFin(intervention.getDateDebut().plusHours(3));
+                intervention.setDateDebut(debut);
+                intervention.setDateFin(debut.plusHours(3));
+                intervention.setEtat(etatIntervention(debut, debut.plusHours(3)));
 
-                cibles(type, compteur).forEach(intervention::addAnimal);
-                habilites(type).forEach(intervention::addPersonnel);
+                switch (type) {
+                    // Le nettoyage vise un enclos vide, sans animal concerné
+                    case NETTOYAGE -> intervention.setEnclos(
+                            this.enclosLibres.get(compteur % this.enclosLibres.size()));
+
+                    // Le déplacement vise l'autre enclos de l'espèce de l'animal
+                    case DEPLACEMENT -> {
+                        Animal animal = this.animaux.get(compteur % this.animaux.size());
+                        intervention.addAnimal(animal);
+                        intervention.setEnclos(this.destinations.get(animal));
+                    }
+
+                    // La capture d'urgence ne concerne que les espèces CRITIQUE
+                    case CAPTURE_URGENTE -> {
+                        Animal animal = this.animauxCritiques.get(compteur % this.animauxCritiques.size());
+                        intervention.addAnimal(animal);
+                        intervention.setEnclos(this.destinations.get(animal));
+                    }
+
+                    // Le soin ne vise qu'un animal blessé ou malade
+                    case SOIN_MEDICAL -> intervention.addAnimal(animalASoigner(compteur));
+
+                    default -> intervention.addAnimal(this.animaux.get(compteur % this.animaux.size()));
+                }
+
+                habilites(type, compteur).forEach(intervention::addPersonnel);
 
                 this.interventionService.create(intervention);
                 compteur++;
@@ -221,36 +271,33 @@ public class Init implements CommandLineRunner {
         }
     }
 
-    private LocalDateTime dateDebut(EtatIntervention etat) {
-        return switch (etat) {
-            case PLANIFIEES -> LocalDateTime.now().plusDays(faker.number().numberBetween(2, 15));
-            case EN_COURS -> LocalDateTime.now().minusHours(1);
-            case TERMINES, ANNULEE -> LocalDateTime.now().minusDays(faker.number().numberBetween(1, 30));
-        };
+    private EtatIntervention etatIntervention(LocalDateTime debut, LocalDateTime fin) {
+        LocalDateTime maintenant = LocalDateTime.now();
+        if (fin.isBefore(maintenant)) {
+            return EtatIntervention.TERMINES;
+        }
+        if (debut.isAfter(maintenant)) {
+            return EtatIntervention.PLANIFIEES;
+        }
+        return EtatIntervention.EN_COURS;
     }
 
-    /** Un soin médical vise un animal blessé ou malade, pas un sujet en pleine forme. */
-    private List<Animal> cibles(TypeIntervention type, int compteur) {
-        List<Animal> candidats = this.animaux.stream()
-                .filter(animal -> switch (type) {
-                    case SOIN_MEDICAL -> animal.getEtatSante() == EtatSante.BLESSE
-                            || animal.getEtatSante() == EtatSante.MALADE;
-                    case CAPTURE_URGENTE -> animal.getEspece().getDangerosite() == Dangerosite.CRITIQUE;
-                    default -> animal.getEtatSante() != EtatSante.DECEDE;
-                })
+    private Animal animalASoigner(int compteur) {
+        List<Animal> soignables = this.animaux.stream()
+                .filter(animal -> animal.getEtatSante() == EtatSante.BLESSE
+                        || animal.getEtatSante() == EtatSante.MALADE)
                 .toList();
-
-        return candidats.isEmpty()
-                ? List.of()
-                : List.of(candidats.get(compteur % candidats.size()));
+        return soignables.get(compteur % soignables.size());
     }
 
-    /** Personnels dont l'habilitation atteint le niveau exigé par le type d'intervention. */
-    private List<Personnel> habilites(TypeIntervention type) {
-        int requis = type.getNiveauMinimaleRequise().getNiveauHabilitation();
-        return this.personnels.stream()
-                .filter(personnel -> personnel.getNiveauHabilitation().getNiveauHabilitation() >= requis)
-                .limit(2)
+    /** 2 soigneurs dont l'habilitation atteint le niveau exigé, tournants pour éviter les conflits. */
+    private List<Personnel> habilites(TypeIntervention type, int compteur) {
+        int requis = type.getNiveauMinimumRequis().getNiveauHabilitationInt();
+        List<Personnel> candidats = this.personnels.stream()
+                .filter(personnel -> personnel.getNiveauHabilitation().getNiveauHabilitationInt() >= requis)
                 .toList();
+
+        int debut = compteur % candidats.size();
+        return List.of(candidats.get(debut), candidats.get((debut + 1) % candidats.size()));
     }
 }

@@ -24,4 +24,6 @@ public class InterventionResponseDto {
     private TypeIntervention type;
     private List<AnimalResponseDto> animals;
     private List<PersonnelDto> personnels;
+    private EnclosDto enclos;
+
 }

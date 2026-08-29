@@ -16,10 +16,7 @@ public class AnimalDisponible {
         this.animalService = animalService;
     }
 
-    public ResultatValidation verifier(
-            Animal animal,
-            Intervention intervention
-    ) {
+    public ResultatValidation verifier(Animal animal, Intervention intervention) {
 
         if (animalService.animalEstDisponible(animal.getId(), intervention.getDateDebut(), intervention.getDateFin())) {
             return ResultatValidation.valide();
