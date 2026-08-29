@@ -48,13 +48,6 @@ public class Espece extends AbstractPersistableWithIdSetter<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "dangerosite", nullable = false, length = 50)
     private Dangerosite dangerosite;
-    
-    @Getter
-    @Setter
-    @NotNull(message = "alimentation ne doit pas être null")
-    @Enumerated(EnumType.STRING)
-    @Column(name = "alimentation", nullable = false)
-    private Alimentation alimentation;
 
     @Getter
     @Setter
