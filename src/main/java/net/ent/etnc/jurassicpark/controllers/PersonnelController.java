@@ -1,10 +1,12 @@
 package net.ent.etnc.jurassicpark.controllers;
 
+import net.ent.etnc.jurassicpark.controllers.commons.PageRequests;
 import net.ent.etnc.jurassicpark.dtos.PersonnelDto;
 import net.ent.etnc.jurassicpark.dtos.assemblers.PersonnelAssembler;
 import net.ent.etnc.jurassicpark.models.Personnel;
 import net.ent.etnc.jurassicpark.services.PersonnelService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +31,14 @@ public class PersonnelController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Collection<PersonnelDto>> findAll() {
+    public ResponseEntity<Page<PersonnelDto>> findAll(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "id") String sort
+    ) {
         try {
-            Collection<Personnel> personnels = this.personnelService.findAll(Pageable.unpaged()).getContent();
-            return ResponseEntity.ok(this.personnelAssembler.toDtos(personnels));
+            Page<Personnel> personnels = this.personnelService.findAll(PageRequests.of(page, size, sort));
+            return ResponseEntity.ok(personnels.map(personnelAssembler::toDto));
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().build();
         }

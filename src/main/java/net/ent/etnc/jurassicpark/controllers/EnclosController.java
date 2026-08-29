@@ -1,10 +1,12 @@
 package net.ent.etnc.jurassicpark.controllers;
 
+import net.ent.etnc.jurassicpark.controllers.commons.PageRequests;
 import net.ent.etnc.jurassicpark.dtos.EnclosDto;
 import net.ent.etnc.jurassicpark.dtos.assemblers.EnclosAssembler;
 import net.ent.etnc.jurassicpark.models.Enclos;
 import net.ent.etnc.jurassicpark.services.EnclosService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,10 +31,14 @@ public class EnclosController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Collection<EnclosDto>> findAll() {
+    public ResponseEntity<Page<EnclosDto>> findAll(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "id") String sort
+    ) {
         try {
-            Collection<Enclos> enclos = this.enclosService.findAll(Pageable.unpaged()).getContent();
-            return ResponseEntity.ok(this.enclosAssembler.toDtos(enclos));
+            Page<Enclos> enclos = this.enclosService.findAll(PageRequests.of(page, size, sort));
+            return ResponseEntity.ok(enclos.map(enclosAssembler::toDto));
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().build();
         }

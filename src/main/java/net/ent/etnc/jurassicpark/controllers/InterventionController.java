@@ -1,11 +1,13 @@
 package net.ent.etnc.jurassicpark.controllers;
 
+import net.ent.etnc.jurassicpark.controllers.commons.PageRequests;
 import net.ent.etnc.jurassicpark.dtos.InterventionRequestDto;
 import net.ent.etnc.jurassicpark.dtos.InterventionResponseDto;
 import net.ent.etnc.jurassicpark.dtos.assemblers.InterventionAssembler;
 import net.ent.etnc.jurassicpark.models.Intervention;
 import net.ent.etnc.jurassicpark.services.InterventionService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,10 +32,14 @@ public class InterventionController {
     }
 
     @GetMapping("/")
-    public ResponseEntity<Collection<InterventionResponseDto>> findAll() {
+    public ResponseEntity<Page<InterventionResponseDto>> findAll(
+            @RequestParam(required = false, defaultValue = "1") Integer page,
+            @RequestParam(required = false, defaultValue = "10") Integer size,
+            @RequestParam(required = false, defaultValue = "id") String sort
+    ) {
         try {
-            Collection<Intervention> interventions = this.interventionService.findAll(Pageable.unpaged()).getContent();
-            return ResponseEntity.ok(this.interventionAssembler.toDtos(interventions));
+            Page<Intervention> interventions = this.interventionService.findAll(PageRequests.of(page, size, sort));
+            return ResponseEntity.ok(interventions.map(interventionAssembler::toDto));
         } catch (Exception ex) {
             return ResponseEntity.internalServerError().build();
         }
