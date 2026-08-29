@@ -5,4 +5,5 @@ import net.ent.etnc.jurassicpark.services.commons.Service;
 
 public interface EnclosService extends Service<Enclos, Long> {
 
+    boolean enclosVide(Long id);
 }

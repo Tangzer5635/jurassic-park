@@ -7,11 +7,11 @@ public enum NiveauHabilitation {
     EXPERT(30),
     ELITE(40);
 
-    private final int niveauHabilitation;
+    private final int niveauHabilitationInt;
 
     private NiveauHabilitation(int niveauHabilitation) {
-        this.niveauHabilitation = niveauHabilitation;
+        this.niveauHabilitationInt = niveauHabilitationInt;
     }
 
-    public int getNiveauHabilitation() {return niveauHabilitation;}
+    public int getNiveauHabilitationInt() {return niveauHabilitationInt;}
 }
