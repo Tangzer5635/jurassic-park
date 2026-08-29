@@ -15,7 +15,7 @@ public enum TypeIntervention {
         this.niveauHabilitation = niveauHabilitation;
     }
 
-    public NiveauHabilitation getNiveauMinimaleRequise() {
+    public NiveauHabilitation getNiveauMinimumRequis() {
         return niveauHabilitation;
     }
 }

@@ -56,6 +56,13 @@ public class Espece extends AbstractPersistableWithIdSetter<Long> {
     @Column(name = "alimentation", nullable = false)
     private Alimentation alimentation;
 
+    @Getter
+    @Setter
+    @NotNull(message = "alimentation ne doit pas être null")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "alimentation",length = 15, nullable = false)
+    private Alimentation alimentation;
+
     @Valid
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "ESPECE_id",
