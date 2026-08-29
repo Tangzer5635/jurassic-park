@@ -28,6 +28,7 @@ public class EspeceAssembler {
         return EspeceResponseDto.builder()
                 .id(espece.getId())
                 .code(espece.getCode())
+                .nom(espece.getNom())
                 .dangerosite(espece.getDangerosite())
                 .alimentation(espece.getAlimentation())
                 .type(espece.getType())
@@ -43,6 +44,7 @@ public class EspeceAssembler {
         Espece espece = new Espece();
         espece.setId(dto.getId());
         espece.setCode(dto.getCode());
+        espece.setNom(dto.getNom());
         espece.setDangerosite(dto.getDangerosite());
         espece.setAlimentation(dto.getAlimentation());
         espece.setType(dto.getType());

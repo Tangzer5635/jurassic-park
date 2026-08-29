@@ -26,7 +26,7 @@ public class EnclosAssembler {
         return enclos.stream().map(this::toDto).toList();
     }
 
-    private Enclos toEntity(EnclosDto enclosDto) throws ServiceException {
+    public Enclos toEntity(EnclosDto enclosDto) throws ServiceException {
         try {
             Enclos enclos = new Enclos();
             enclos.setId(enclosDto.getId());

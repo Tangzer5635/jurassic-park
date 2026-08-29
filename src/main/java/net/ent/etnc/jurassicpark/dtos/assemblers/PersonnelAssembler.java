@@ -26,7 +26,7 @@ public class PersonnelAssembler {
         return personnels.stream().map(this::toDto).toList();
     }
 
-    private Personnel toEntity(PersonnelDto personnelDto) throws ServiceException {
+    public Personnel toEntity(PersonnelDto personnelDto) throws ServiceException {
         try {
             Personnel personnel = new Personnel();
             personnel.setId(personnelDto.getId());

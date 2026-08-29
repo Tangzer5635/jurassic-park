@@ -16,6 +16,7 @@ public class EspeceRequestDto {
 
     private Long id;
     private String code;
+    private String nom;
     private Dangerosite dangerosite;
     private Alimentation alimentation;
     private Set<Long> enclosId;

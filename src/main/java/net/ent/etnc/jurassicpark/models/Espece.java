@@ -11,6 +11,7 @@ import net.ent.etnc.jurassicpark.models.commons.AbstractPersistableWithIdSetter;
 import net.ent.etnc.jurassicpark.models.enumerations.Alimentation;
 import net.ent.etnc.jurassicpark.models.enumerations.Dangerosite;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeEspece;
+import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,6 +32,15 @@ public class Espece extends AbstractPersistableWithIdSetter<Long> {
     @Pattern(regexp = "^[ATV]\\d{4}", message = "Le code doit contenir une lettre puis 4 chiffres")
     @Column(name = "code", length = 5, nullable = false)
     private String code;
+
+    @Getter
+    @Setter
+    @NotNull(message = "nom ne doit pas être null")
+    @NotEmpty(message = "nom ne doit pas être vide")
+    @NotBlank(message = "nom doit contenir des caractères lisibles")
+    @Length(min = 1, max = 50, message = "nom doit avoir entre 1 et 50 caractères")
+    @Column(name = "nom", length = 50, nullable = false)
+    private String nom;
     
     @Getter
     @Setter

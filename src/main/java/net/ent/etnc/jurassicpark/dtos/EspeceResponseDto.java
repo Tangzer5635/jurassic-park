@@ -18,6 +18,7 @@ public class EspeceResponseDto {
 
     private Long id;
     private String code;
+    private String nom;
     private Dangerosite dangerosite;
     private Alimentation alimentation;
     private List<EnclosDto> enclos;
