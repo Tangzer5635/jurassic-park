@@ -8,9 +8,9 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.*;
 import net.ent.etnc.jurassicpark.models.commons.AbstractPersistableWithIdSetter;
+import net.ent.etnc.jurassicpark.models.enumerations.Alimentation;
 import net.ent.etnc.jurassicpark.models.enumerations.Dangerosite;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeEspece;
-import org.hibernate.validator.constraints.Length;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,22 +38,29 @@ public class Espece extends AbstractPersistableWithIdSetter<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "dangerosite", nullable = false, length = 50)
     private Dangerosite dangerosite;
+    
+    @Getter
+    @Setter
+    @NotNull(message = "alimentation ne doit pas être null")
+    @Enumerated(EnumType.STRING)
+    @Column(name = "alimentation", nullable = false)
+    private Alimentation alimentation;
 
     @Valid
     @OneToMany(fetch = FetchType.LAZY)
     @JoinColumn(name = "ESPECE_id",
             foreignKey = @ForeignKey(name = "fk_ENCLOS_ESPECE"))
-    private List<Enclos> encloss = new ArrayList<>();
+    private List<Enclos> enclos = new ArrayList<>();
 
-    public List<Enclos> getEncloss() {
-        return Collections.unmodifiableList(encloss);
+    public List<Enclos> getEnclos() {
+        return Collections.unmodifiableList(enclos);
     }
 
-    public void addEnclos(Enclos enclos) {
-        encloss.add(enclos);
+    public void addEnclos(Enclos enclosParam) {
+        enclos.add(enclosParam);
     }
-    public void removeEnclos(Enclos enclos) {
-        encloss.remove(enclos);
+    public void removeEnclos(Enclos enclosParam) {
+        enclos.remove(enclosParam);
     }
     
     @Getter

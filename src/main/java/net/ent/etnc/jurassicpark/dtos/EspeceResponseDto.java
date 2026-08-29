@@ -2,6 +2,7 @@ package net.ent.etnc.jurassicpark.dtos;
 
 import lombok.*;
 import net.ent.etnc.jurassicpark.models.Enclos;
+import net.ent.etnc.jurassicpark.models.enumerations.Alimentation;
 import net.ent.etnc.jurassicpark.models.enumerations.Dangerosite;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeEspece;
 
@@ -18,6 +19,7 @@ public class EspeceResponseDto {
     private Long id;
     private String code;
     private Dangerosite dangerosite;
-    private List<Enclos> encloss;
+    private Alimentation alimentation;
+    private List<EnclosDto> enclos;
     private TypeEspece type;
 }

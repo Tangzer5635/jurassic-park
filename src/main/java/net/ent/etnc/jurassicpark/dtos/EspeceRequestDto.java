@@ -1,6 +1,7 @@
 package net.ent.etnc.jurassicpark.dtos;
 
 import lombok.*;
+import net.ent.etnc.jurassicpark.models.enumerations.Alimentation;
 import net.ent.etnc.jurassicpark.models.enumerations.Dangerosite;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeEspece;
 
@@ -16,9 +17,7 @@ public class EspeceRequestDto {
     private Long id;
     private String code;
     private Dangerosite dangerosite;
-
-    //TODO : ajouter une liste d'espece'
-    private Set<Long> enclosID;
-
+    private Alimentation alimentation;
+    private Set<Long> enclosId;
     private TypeEspece type;
 }
