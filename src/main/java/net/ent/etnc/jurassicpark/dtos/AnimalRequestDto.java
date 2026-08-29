@@ -1,8 +1,6 @@
 package net.ent.etnc.jurassicpark.dtos;
 
 import lombok.*;
-import net.ent.etnc.jurassicpark.models.Enclos;
-import net.ent.etnc.jurassicpark.models.Espece;
 import net.ent.etnc.jurassicpark.models.enumerations.EtatSante;
 import net.ent.etnc.jurassicpark.models.enumerations.Sexe;
 
@@ -11,12 +9,12 @@ import net.ent.etnc.jurassicpark.models.enumerations.Sexe;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AnimalDto {
+public class AnimalRequestDto {
     private Long id;
     private String code;
     private String prenom;
     private EtatSante etatSante;
     private Sexe sexe;
-    private Espece espece;
-    private Enclos enclos;
+    private Long especeId;
+    private Long enclosId;
 }

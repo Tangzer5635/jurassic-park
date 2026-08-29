@@ -20,10 +20,6 @@ public class InterventionRequestDto {
     private LocalDateTime dateFin;
     private EtatIntervention etat;
     private TypeIntervention type;
-
-    //Todo : ajouter une liste d'animals'
     private Set<Long> animalId;
-
-    //Todo : ajouter une liste de personnels'
     private Set<Long> personnelId;
 }

@@ -22,6 +22,6 @@ public class InterventionResponseDto {
     private LocalDateTime dateFin;
     private EtatIntervention etat;
     private TypeIntervention type;
-    private List<Animal> animals;
-    private List<Personnel> personnels;
+    private List<AnimalResponseDto> animals;
+    private List<PersonnelDto> personnels;
 }
