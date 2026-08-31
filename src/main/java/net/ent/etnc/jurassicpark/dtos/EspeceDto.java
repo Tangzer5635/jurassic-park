@@ -5,14 +5,12 @@ import net.ent.etnc.jurassicpark.models.enumerations.Alimentation;
 import net.ent.etnc.jurassicpark.models.enumerations.Dangerosite;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeEspece;
 
-import java.util.Set;
-
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EspeceRequestDto {
+public class EspeceDto {
 
     private Long id;
     private String code;

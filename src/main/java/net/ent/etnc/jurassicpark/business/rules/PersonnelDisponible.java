@@ -7,8 +7,6 @@ import net.ent.etnc.jurassicpark.models.Personnel;
 import net.ent.etnc.jurassicpark.services.PersonnelService;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
-
 @Component
 public class PersonnelDisponible {
 
@@ -23,7 +21,7 @@ public class PersonnelDisponible {
     ) {
 
         for (Personnel p : intervention.getPersonnels()) {
-            if (!personnelService.personnelEstDisponnible(p.getId(), intervention.getDateDebut(), intervention.getDateFin())) {
+            if (!personnelService.personnelEstDisponible(p.getId(), intervention.getDateDebut(), intervention.getDateFin())) {
                 return ResultatValidation.invalide(ErreurValidation.PERSONNEL_NON_DISPONIBLE);
             }
         }

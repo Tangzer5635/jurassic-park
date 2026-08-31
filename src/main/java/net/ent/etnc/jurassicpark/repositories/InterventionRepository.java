@@ -1,7 +1,11 @@
 package net.ent.etnc.jurassicpark.repositories;
 
 import net.ent.etnc.jurassicpark.models.Intervention;
+import net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention;
+import net.ent.etnc.jurassicpark.models.enumerations.TypeIntervention;
 import net.ent.etnc.jurassicpark.repositories.commons.BaseRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -44,5 +48,23 @@ public interface InterventionRepository extends BaseRepository<Intervention> {
     boolean personnelUtilise(@Param("personnelId") Long personnelId);
 
     boolean existsByEnclosId(Long enclosId);
+
+    @Query("SELECT i " +
+            "FROM Intervention i " +
+            "JOIN i.animals a " +
+            "WHERE a.id = :animalId")
+    Page<Intervention> findAllByAnimalId(@Param("animalId") Long animalId, Pageable pageable);
+
+    @Query("SELECT i " +
+            "FROM Intervention i " +
+            "JOIN i.personnels p " +
+            "WHERE p.id = :personnelId")
+    Page<Intervention> findAllByPersonnelId(@Param("personnelId") Long personnelId, Pageable pageable);
+
+    Page<Intervention> findAllByEnclosId(Long enclosId, Pageable pageable);
+
+    Page<Intervention> findAllByEtat(EtatIntervention etat, Pageable pageable);
+
+    Page<Intervention> findAllByType(TypeIntervention type, Pageable pageable);
 
 }

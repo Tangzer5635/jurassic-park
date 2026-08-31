@@ -1,6 +1,7 @@
 package net.ent.etnc.jurassicpark.services.impl;
 
 import net.ent.etnc.jurassicpark.models.Personnel;
+import net.ent.etnc.jurassicpark.models.enumerations.NiveauHabilitation;
 import net.ent.etnc.jurassicpark.repositories.PersonnelRepository;
 import net.ent.etnc.jurassicpark.services.InterventionService;
 import net.ent.etnc.jurassicpark.services.PersonnelService;
@@ -8,6 +9,8 @@ import net.ent.etnc.jurassicpark.services.commons.AbstractService;
 import net.ent.etnc.jurassicpark.services.commons.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,7 +30,7 @@ public class PersonnelServiceImpl extends AbstractService<Personnel, PersonnelRe
 
     @Override
     @Transactional(readOnly = true)
-    public boolean personnelEstDisponnible(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
+    public boolean personnelEstDisponible(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
         return this.repository.personnelEstLibre(id, dateDebut, dateFin);
     }
 
@@ -38,5 +41,11 @@ public class PersonnelServiceImpl extends AbstractService<Personnel, PersonnelRe
             throw new ServiceException("Personnel encore rattaché à des interventions");
         }
         super.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Personnel> findAllByNiveauHabilitation(NiveauHabilitation niveau, Pageable pageable) {
+        return this.repository.findAllByNiveauHabilitation(niveau, pageable);
     }
 }

@@ -4,6 +4,7 @@ import net.ent.etnc.jurassicpark.controllers.commons.PageRequests;
 import net.ent.etnc.jurassicpark.dtos.PersonnelDto;
 import net.ent.etnc.jurassicpark.dtos.assemblers.PersonnelAssembler;
 import net.ent.etnc.jurassicpark.models.Personnel;
+import net.ent.etnc.jurassicpark.models.enumerations.NiveauHabilitation;
 import net.ent.etnc.jurassicpark.services.PersonnelService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,9 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -32,76 +31,61 @@ public class PersonnelController {
 
     @GetMapping("/")
     public ResponseEntity<Page<PersonnelDto>> findAll(
+            @RequestParam(required = false) NiveauHabilitation niveauHabilitation,
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "id") String sort
     ) {
-        try {
-            Page<Personnel> personnels = this.personnelService.findAll(PageRequests.of(page, size, sort));
-            return ResponseEntity.ok(personnels.map(personnelAssembler::toDto));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
-        }
+        Pageable pageable = PageRequests.of(page, size, sort);
+
+        Page<Personnel> personnels = niveauHabilitation != null
+                ? this.personnelService.findAllByNiveauHabilitation(niveauHabilitation, pageable)
+                : this.personnelService.findAll(pageable);
+
+        return ResponseEntity.ok(personnels.map(personnelAssembler::toDto));
     }
 
     @GetMapping("/{id}/")
     public ResponseEntity<PersonnelDto> findById(@PathVariable Long id) {
-        try {
-            Optional<Personnel> optionalPersonnel = this.personnelService.findById(id);
-            return optionalPersonnel
-                    .map(personnelAssembler::toDto)
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return this.personnelService.findById(id)
+                .map(personnelAssembler::toDto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping("/")
     public ResponseEntity<PersonnelDto> create(@RequestBody PersonnelDto personnelDto) {
-        try {
-            if (Objects.isNull(personnelDto)) {
-                return ResponseEntity.badRequest().build();
-            }
-            if (Objects.nonNull(personnelDto.getId())) {
-                return ResponseEntity.badRequest().build();
-            }
-            Personnel personnel = this.personnelService.create(this.personnelAssembler.toEntity(personnelDto));
-            return ResponseEntity.status(HttpStatus.CREATED).body(this.personnelAssembler.toDto(personnel));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
+        if (Objects.isNull(personnelDto)) {
+            return ResponseEntity.badRequest().build();
         }
+        if (Objects.nonNull(personnelDto.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        Personnel personnel = this.personnelService.create(this.personnelAssembler.toEntity(personnelDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.personnelAssembler.toDto(personnel));
     }
 
     @PutMapping("/{id}/")
     public ResponseEntity<PersonnelDto> update(@PathVariable Long id, @RequestBody PersonnelDto personnelDto) {
-        try {
-            if (Objects.isNull(personnelDto)) {
-                return ResponseEntity.badRequest().build();
-            }
-            if (!id.equals(personnelDto.getId())) {
-                return ResponseEntity.badRequest().build();
-            }
-            if (!this.personnelService.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            Personnel personnel = this.personnelService.update(this.personnelAssembler.toEntity(personnelDto));
-            return ResponseEntity.ok(this.personnelAssembler.toDto(personnel));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
+        if (Objects.isNull(personnelDto)) {
+            return ResponseEntity.badRequest().build();
         }
+        if (!id.equals(personnelDto.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!this.personnelService.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Personnel personnel = this.personnelService.update(this.personnelAssembler.toEntity(personnelDto));
+        return ResponseEntity.ok(this.personnelAssembler.toDto(personnel));
     }
 
     @DeleteMapping("/{id}/")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        try {
-            if (!this.personnelService.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-            }
-            this.personnelService.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
+        if (!this.personnelService.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        this.personnelService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
