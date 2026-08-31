@@ -91,6 +91,7 @@ public class Init implements CommandLineRunner {
             case NETTOYAGE -> 'N';
             case SURVEILLANCE -> 'S';
             case DEPLACEMENT -> 'D';
+            case EQUARRISSAGE -> 'E';
             case SOIN_MEDICAL -> 'M';
             case CAPTURE_URGENTE -> 'C';
         };

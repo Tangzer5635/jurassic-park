@@ -30,15 +30,11 @@ public class AnimauxCompatibles {
         Set<Animal> animauxEnclos = animalService.getAnimauxEnclosApresInterventionsPlanifiees(intervention.getEnclos().getId());
         //TODO vérifier que l'on récupère bien le bon enclos avec la methode getEnclos (voir classe Intervention)
 
-        if ((animauxDeplaces.size() + animauxEnclos.size()) > intervention.getEnclos().getCapaciteMax) {    //TODO vérifier le if
+        if ((animauxDeplaces.size() + animauxEnclos.size()) > intervention.getEnclos().getCapaciteMax()) {    //TODO vérifier le if
             return ResultatValidation.invalide(ErreurValidation.ENCLOS_TROP_PETIT);
         }
 
-        if (animauxDeplaces.isEmpty()) {
-            return ResultatValidation.valide();
-        }
-
-        if (animauxEnclos.isEmpty()) {
+        if (animauxDeplaces.isEmpty() || animauxEnclos.isEmpty()) {
             return ResultatValidation.valide();
         }
 
