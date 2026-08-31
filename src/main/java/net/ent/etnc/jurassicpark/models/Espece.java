@@ -55,23 +55,6 @@ public class Espece extends AbstractPersistableWithIdSetter<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "alimentation",length = 15, nullable = false)
     private Alimentation alimentation;
-
-    @Valid
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ESPECE_id",
-            foreignKey = @ForeignKey(name = "fk_ENCLOS_ESPECE"))
-    private List<Enclos> enclos = new ArrayList<>();
-
-    public List<Enclos> getEnclos() {
-        return Collections.unmodifiableList(enclos);
-    }
-
-    public void addEnclos(Enclos enclosParam) {
-        enclos.add(enclosParam);
-    }
-    public void removeEnclos(Enclos enclosParam) {
-        enclos.remove(enclosParam);
-    }
     
     @Getter
     @Setter

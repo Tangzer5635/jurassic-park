@@ -20,7 +20,7 @@ public class EnclosDestinationCompatible {
     ) {
 
         Set<Animal> animaux = intervention.getAnimals();
-        Enclos enclos = intervention.getEnclos(); //TODO vérifier que l'on récupère bien le bon enclos avec la methode getEnclo (voir classe Intervention)
+        Enclos enclos = intervention.getEnclos();
 
         if (enclos == null) {
             return ResultatValidation.invalide(ErreurValidation.AUCUN_ENCLOS);

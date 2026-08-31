@@ -15,15 +15,6 @@ import java.util.Optional;
 @Component
 public class EspeceAssembler {
 
-    private final EnclosAssembler enclosAssembler;
-    private final EnclosService enclosService;
-
-    @Autowired
-    public EspeceAssembler(EnclosAssembler enclosAssembler, EnclosService enclosService) {
-        this.enclosAssembler = enclosAssembler;
-        this.enclosService = enclosService;
-    }
-
     public EspeceResponseDto toDto(Espece espece) {
         return EspeceResponseDto.builder()
                 .id(espece.getId())
@@ -32,7 +23,6 @@ public class EspeceAssembler {
                 .dangerosite(espece.getDangerosite())
                 .alimentation(espece.getAlimentation())
                 .type(espece.getType())
-                .enclos(enclosAssembler.toDtos(espece.getEnclos()).stream().toList())
                 .build();
     }
 
@@ -48,16 +38,6 @@ public class EspeceAssembler {
         espece.setDangerosite(dto.getDangerosite());
         espece.setAlimentation(dto.getAlimentation());
         espece.setType(dto.getType());
-
-        if (dto.getEnclosId() != null && !dto.getEnclosId().isEmpty()) {
-            for (Long id : dto.getEnclosId()) {
-                Optional<Enclos> optionalEnclos = enclosService.findById(id);
-                if (optionalEnclos.isEmpty()) {
-                    throw new ServiceException("Enclos introuvable avec l'ID " + id);
-                }
-                espece.addEnclos(optionalEnclos.get());
-            }
-        }
 
         return espece;
     }

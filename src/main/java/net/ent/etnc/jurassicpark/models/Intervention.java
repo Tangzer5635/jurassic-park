@@ -86,7 +86,7 @@ public class Intervention extends AbstractPersistableWithIdSetter<Long> {
 
     @AssertTrue(message = "dateFin doit être postérieure à dateDebut")
     public boolean isPeriodeValide() {
-        return dateDebut == null || dateFin == null || dateFin.isAfter(dateDebut);
+        return dateFin.isAfter(dateDebut);
     }
 
     @Getter
@@ -103,6 +103,8 @@ public class Intervention extends AbstractPersistableWithIdSetter<Long> {
     @Column(name = "type", nullable = false, length = 50)
     private TypeIntervention type;
 
+
+    //ENCLOS OU L'ANIMAL SE DEPLACE
     @Getter
     @Setter
     @ManyToOne(fetch = FetchType.LAZY)
