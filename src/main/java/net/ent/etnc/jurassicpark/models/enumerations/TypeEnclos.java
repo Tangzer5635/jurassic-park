@@ -5,5 +5,6 @@ public enum TypeEnclos {
     AQUATIQUE,
     TERRESTRE,
     VOLIERE,
-    QUARANTAINE
+    QUARANTAINE,
+    CIMETIERE
 }

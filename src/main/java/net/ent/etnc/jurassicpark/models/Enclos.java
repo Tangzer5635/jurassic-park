@@ -22,7 +22,7 @@ public class Enclos extends AbstractPersistableWithIdSetter<Long> {
     @NotEmpty(message = "code ne doit pas être vide")
     @NotBlank(message = "code doit contenir des caractères lisibles")
     //lettre = type enclos puis 1 chiffre correspond au niveau de sécurite et 2 chiffres = code
-    @Pattern(regexp = "^[ATVQ]\\d{3}$", message = "code doit contenir 1 lettre et 3 chiffres")
+    @Pattern(regexp = "^[ATVQC]\\d{3}$", message = "code doit contenir 1 lettre et 3 chiffres")
     @Column(name = "code", length = 4, nullable = false)
     private String code;
 

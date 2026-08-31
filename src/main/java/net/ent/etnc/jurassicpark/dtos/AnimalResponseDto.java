@@ -1,8 +1,6 @@
 package net.ent.etnc.jurassicpark.dtos;
 
 import lombok.*;
-import net.ent.etnc.jurassicpark.dtos.EnclosDto;
-import net.ent.etnc.jurassicpark.dtos.EspeceResponseDto;
 import net.ent.etnc.jurassicpark.models.enumerations.EtatSante;
 import net.ent.etnc.jurassicpark.models.enumerations.Sexe;
 
@@ -17,6 +15,6 @@ public class AnimalResponseDto {
     private String prenom;
     private EtatSante etatSante;
     private Sexe sexe;
-    private EspeceResponseDto espece;
+    private EspeceDto espece;
     private EnclosDto enclos;
 }

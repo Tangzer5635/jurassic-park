@@ -36,7 +36,9 @@ public class Init implements CommandLineRunner {
     private final Map<Animal, Enclos> destinations = new HashMap<>();
     private final List<Enclos> enclosQuarantaine = new ArrayList<>();
     private final List<Enclos> enclosLibres = new ArrayList<>();
-    private final List<Animal> animaux = new ArrayList<>();
+    private final List<Animal> animauxSains = new ArrayList<>();
+    private final List<Animal> animauxSoignables = new ArrayList<>();
+    private final List<Animal> animauxMorts = new ArrayList<>();
     private final List<Animal> animauxCritiques = new ArrayList<>();
     private final List<Personnel> personnels = new ArrayList<>();
 
@@ -64,16 +66,13 @@ public class Init implements CommandLineRunner {
         this.chargeInterventions();
     }
 
-    private <T extends Enum<T>> T alea(T[] valeurs) {
-        return valeurs[faker.number().numberBetween(0, valeurs.length)];
-    }
-
     private char lettre(TypeEnclos type) {
         return switch (type) {
             case AQUATIQUE -> 'A';
             case TERRESTRE -> 'T';
             case VOLIERE -> 'V';
             case QUARANTAINE -> 'Q';
+            case CIMETIERE -> 'C';
         };
     }
 
@@ -110,7 +109,7 @@ public class Init implements CommandLineRunner {
         Enclos enclos = new Enclos();
         enclos.setType(type);
         enclos.setNiveauSecurite(securite);
-        // ACTIF obligatoire : un enclos FERME, EVACUE ou en MAINTENANCE ne peut rien accueillir
+        // ACTIF obligatoire : EnclosDestinationCompatible rejette tout autre état
         enclos.setEtat(EtatEnclos.ACTIF);
         enclos.setCapaciteMax(capacite);
         // lettre = type, 1 chiffre = niveau de sécurité, 2 chiffres = numéro
@@ -132,17 +131,20 @@ public class Init implements CommandLineRunner {
             this.enclosParEspece.put(nom, lot);
         }
 
-        // Quarantaine : sécurité maximale, rattachée à aucune espèce
+        // Quarantaine : accueille les animaux blessés et malades
         for (int i = 0; i < 3; i++) {
             this.enclosQuarantaine.add(
                     creerEnclos(TypeEnclos.QUARANTAINE, SecuriteEnclos.MAXIMUM, CAPACITE_QUARANTAINE));
         }
 
-        // Enclos sans occupant : cibles des interventions de nettoyage
+        // Enclos sans occupant ni déplacement prévu : seuls candidats au nettoyage
         for (int i = 0; i < 3; i++) {
             this.enclosLibres.add(
                     creerEnclos(TypeEnclos.TERRESTRE, SecuriteEnclos.STANDARD, CAPACITE_ENCLOS));
         }
+
+        // Cimetière : destination des cadavres après équarrissage
+        creerEnclos(TypeEnclos.CIMETIERE, SecuriteEnclos.STANDARD, 50);
     }
 
     private void chargeEspeces() {
@@ -154,7 +156,6 @@ public class Init implements CommandLineRunner {
             espece.setAlimentation(nom.getAlimentation());
             espece.setDangerosite(nom.getDangerosite());
             espece.setCode(lettre(nom.getType()) + String.format("%04d", i++));
-            this.enclosParEspece.get(nom).forEach(espece::addEnclos);
 
             this.especes.put(nom, this.especeService.create(espece));
         }
@@ -165,45 +166,55 @@ public class Init implements CommandLineRunner {
         for (NomEspece nom : NomEspece.values()) {
             List<Enclos> disponibles = this.enclosParEspece.get(nom);
 
-            // 2 animaux par espèce, 1 par enclos : la capacité n'est jamais atteinte
+            // 2 animaux par espèce, 1 par enclos : la capacité reste large
             for (int j = 0; j < 2; j++) {
                 EtatSante etat = etatSante(compteur);
-                boolean isole = etat == EtatSante.EN_QUARANTAINE;
+                boolean isole = etat == EtatSante.BLESSE || etat == EtatSante.MALADE;
 
                 Animal animal = new Animal();
                 animal.setCode(String.format("%010d", compteur));
                 animal.setPrenom(faker.name().firstName());
-                animal.setSexe(alea(Sexe.values()));
+                animal.setSexe(compteur % 2 == 0 ? Sexe.MALE : Sexe.FEMELLE);
                 animal.setEtatSante(etat);
                 animal.setEspece(this.especes.get(nom));
+                // blessés et malades en quarantaine, conformément à EnclosDestinationCompatible
                 animal.setEnclos(isole
-                        ? this.enclosQuarantaine.get(compteur % this.enclosQuarantaine.size())
+                        ? this.enclosQuarantaine.get(this.animauxSoignables.size() / CAPACITE_QUARANTAINE)
                         : disponibles.get(j));
 
                 Animal cree = this.animalService.create(animal);
-                this.animaux.add(cree);
-                // destination d'un futur déplacement : l'autre enclos de l'espèce
-                this.destinations.put(cree, disponibles.get(isole ? 0 : 1 - j));
-                if (nom.getDangerosite() == Dangerosite.CRITIQUE) {
-                    this.animauxCritiques.add(cree);
+                trier(cree, nom, etat);
+
+                if (!isole) {
+                    // destination d'un futur déplacement : l'autre enclos de la même espèce
+                    this.destinations.put(cree, disponibles.get(1 - j));
                 }
                 compteur++;
             }
         }
     }
 
-    /** Réparti de façon déterministe pour garantir des animaux à soigner. Aucun DECEDE : ils ne se manipulent plus. */
+    private void trier(Animal animal, NomEspece nom, EtatSante etat) {
+        switch (etat) {
+            case DECEDE -> this.animauxMorts.add(animal);
+            case BLESSE, MALADE -> this.animauxSoignables.add(animal);
+            default -> {
+                this.animauxSains.add(animal);
+                if (nom.getDangerosite() == Dangerosite.CRITIQUE) {
+                    this.animauxCritiques.add(animal);
+                }
+            }
+        }
+    }
+
+    /** Répartition déterministe : 2 morts pour l'équarrissage, 4 soignables, le reste en bonne santé. */
     private EtatSante etatSante(int compteur) {
-        if (compteur % 11 == 0) {
-            return EtatSante.EN_QUARANTAINE;
-        }
-        if (compteur % 5 == 0) {
-            return EtatSante.BLESSE;
-        }
-        if (compteur % 7 == 0) {
-            return EtatSante.MALADE;
-        }
-        return EtatSante.EN_BONNE_SANTE;
+        return switch (compteur) {
+            case 4, 20 -> EtatSante.DECEDE;
+            case 8, 24 -> EtatSante.BLESSE;
+            case 12, 28 -> EtatSante.MALADE;
+            default -> EtatSante.EN_BONNE_SANTE;
+        };
     }
 
     private void chargePersonnels() {
@@ -213,7 +224,7 @@ public class Init implements CommandLineRunner {
             personnel.setCode(String.format("%010d", 1000000000L + i));
             personnel.setNom(texteAuMoins3(faker.name().lastName()));
             personnel.setPrenom(texteAuMoins3(faker.name().firstName()));
-            // 3 personnels par niveau : chaque type d'intervention trouvera des habilités
+            // 3 personnels par niveau : chaque type d'intervention trouve des habilités
             personnel.setNiveauHabilitation(niveaux[i % niveaux.length]);
 
             this.personnels.add(this.personnelService.create(personnel));
@@ -239,36 +250,46 @@ public class Init implements CommandLineRunner {
                 intervention.setDateFin(debut.plusHours(3));
                 intervention.setEtat(etatIntervention(debut, debut.plusHours(3)));
 
-                switch (type) {
-                    // Le nettoyage vise un enclos vide, sans animal concerné
-                    case NETTOYAGE -> intervention.setEnclos(
-                            this.enclosLibres.get(compteur % this.enclosLibres.size()));
-
-                    // Le déplacement vise l'autre enclos de l'espèce de l'animal
-                    case DEPLACEMENT -> {
-                        Animal animal = this.animaux.get(compteur % this.animaux.size());
-                        intervention.addAnimal(animal);
-                        intervention.setEnclos(this.destinations.get(animal));
-                    }
-
-                    // La capture d'urgence ne concerne que les espèces CRITIQUE
-                    case CAPTURE_URGENTE -> {
-                        Animal animal = this.animauxCritiques.get(compteur % this.animauxCritiques.size());
-                        intervention.addAnimal(animal);
-                        intervention.setEnclos(this.destinations.get(animal));
-                    }
-
-                    // Le soin ne vise qu'un animal blessé ou malade
-                    case SOIN_MEDICAL -> intervention.addAnimal(animalASoigner(compteur));
-
-                    default -> intervention.addAnimal(this.animaux.get(compteur % this.animaux.size()));
-                }
-
+                remplir(intervention, type, compteur);
                 habilites(type, compteur).forEach(intervention::addPersonnel);
 
                 this.interventionService.create(intervention);
                 compteur++;
             }
+        }
+    }
+
+    private void remplir(Intervention intervention, TypeIntervention type, int compteur) {
+        switch (type) {
+            // Nettoyage : enclos vide, aucun animal concerné
+            case NETTOYAGE -> intervention.setEnclos(
+                    this.enclosLibres.get(compteur % this.enclosLibres.size()));
+
+            // Déplacement : animal sain vers l'autre enclos de son espèce
+            case DEPLACEMENT -> {
+                Animal animal = this.animauxSains.get(compteur % this.animauxSains.size());
+                intervention.addAnimal(animal);
+                intervention.setEnclos(this.destinations.get(animal));
+            }
+
+            // Équarrissage : uniquement des animaux décédés
+            case EQUARRISSAGE -> intervention.addAnimal(
+                    this.animauxMorts.get(compteur % this.animauxMorts.size()));
+
+            // Soin : uniquement des animaux blessés ou malades
+            case SOIN_MEDICAL -> intervention.addAnimal(
+                    this.animauxSoignables.get(compteur % this.animauxSoignables.size()));
+
+            // Capture d'urgence : espèces critiques, vivantes
+            case CAPTURE_URGENTE -> intervention.addAnimal(
+                    this.animauxCritiques.get(compteur % this.animauxCritiques.size()));
+
+            // Nourrissage : n'importe quel animal vivant
+            case NOURRISSAGE -> intervention.addAnimal(
+                    this.animauxSains.get(compteur % this.animauxSains.size()));
+
+            // Surveillance : aucun animal ni enclos requis
+            case SURVEILLANCE -> { }
         }
     }
 
@@ -283,15 +304,7 @@ public class Init implements CommandLineRunner {
         return EtatIntervention.EN_COURS;
     }
 
-    private Animal animalASoigner(int compteur) {
-        List<Animal> soignables = this.animaux.stream()
-                .filter(animal -> animal.getEtatSante() == EtatSante.BLESSE
-                        || animal.getEtatSante() == EtatSante.MALADE)
-                .toList();
-        return soignables.get(compteur % soignables.size());
-    }
-
-    /** 2 soigneurs dont l'habilitation atteint le niveau exigé, tournants pour éviter les conflits. */
+    /** 2 soigneurs au niveau requis, tournants pour éviter les conflits de planning. */
     private List<Personnel> habilites(TypeIntervention type, int compteur) {
         int requis = type.getNiveauMinimumRequis().getNiveauHabilitationInt();
         List<Personnel> candidats = this.personnels.stream()
