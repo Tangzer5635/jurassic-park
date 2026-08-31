@@ -8,23 +8,19 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DeplacementValidator {
+public class NourrissageSoinValidator {
 
     private final AnimalPresent animalPresent;
     private final ManipulationVivants manipVivants;
     private final AnimalDisponible animalDisponible;
-    private final AnimauxCompatibles animauxCompatibles;
-    private final EnclosDestinationCompatible enclosCompatible;
     private final PersonnelPresent personnelPresent;
     private final PersonnelQualifie personnelQualifie;
     private final PersonnelDisponible personnelDisponible;
 
-    public DeplacementValidator(
-            AnimalPresent animalPresent,
-            ManipulationVivants manipVivants,
+    public NourrissageSoinValidator(
             AnimalDisponible animalDisponible,
-            AnimauxCompatibles animauxCompatibles,
-            EnclosDestinationCompatible enclosCompatible,
+            ManipulationVivants manipVivants,
+            AnimalPresent animalPresent,
             PersonnelPresent personnelPresent,
             PersonnelQualifie personnelQualifie,
             PersonnelDisponible personnelDisponible) {
@@ -32,8 +28,6 @@ public class DeplacementValidator {
         this.animalPresent = animalPresent;
         this.manipVivants = manipVivants;
         this.animalDisponible = animalDisponible;
-        this.animauxCompatibles = animauxCompatibles;
-        this.enclosCompatible = enclosCompatible;
         this.personnelPresent = personnelPresent;
         this.personnelQualifie = personnelQualifie;
         this.personnelDisponible = personnelDisponible;
@@ -46,12 +40,9 @@ public class DeplacementValidator {
                 animalPresent.verifier(intervention.getAnimals()),
                 manipVivants.verifier(intervention.getAnimals()),
                 animalDisponible.verifier(intervention),
-                animauxCompatibles.verifier(intervention),
-                enclosCompatible.verifier(intervention),
                 personnelPresent.verifier(intervention.getPersonnels()),
                 personnelQualifie.verifier(intervention),
                 personnelDisponible.verifier(intervention)
-                )
-        );
+        ));
     }
 }
