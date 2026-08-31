@@ -19,6 +19,7 @@ public class EnclosAssembler {
                 .etat(enclos.getEtat())
                 .niveauSecurite(enclos.getNiveauSecurite())
                 .type(enclos.getType())
+                .capaciteMax(enclos.getCapaciteMax())
                 .build();
     }
 
@@ -34,6 +35,7 @@ public class EnclosAssembler {
             enclos.setEtat(enclosDto.getEtat());
             enclos.setNiveauSecurite(enclosDto.getNiveauSecurite());
             enclos.setType(enclosDto.getType());
+            enclos.setCapaciteMax(enclosDto.getCapaciteMax());
             return enclos;
         } catch (Exception e) {
             throw new ServiceException(e.getMessage());

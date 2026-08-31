@@ -84,6 +84,11 @@ public class Intervention extends AbstractPersistableWithIdSetter<Long> {
     @Column(name = "date_fin", nullable = false)
     private LocalDateTime dateFin;
 
+    @AssertTrue(message = "dateFin doit être postérieure à dateDebut")
+    public boolean isPeriodeValide() {
+        return dateDebut == null || dateFin == null || dateFin.isAfter(dateDebut);
+    }
+
     @Getter
     @Setter
     @NotNull(message = "etat ne doit pas être null")
@@ -97,5 +102,12 @@ public class Intervention extends AbstractPersistableWithIdSetter<Long> {
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, length = 50)
     private TypeIntervention type;
+
+    @Getter
+    @Setter
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "enclos_id", foreignKey = @ForeignKey(name = "fk_INTERVENTION_ENCLOS"))
+    private Enclos enclos;
+
 
 }
