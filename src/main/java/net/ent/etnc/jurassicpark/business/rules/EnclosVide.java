@@ -18,7 +18,7 @@ public class EnclosVide {
     public ResultatValidation verifier(
             Intervention intervention
     ) {
-        if (enclosService.enclosVide(intervention.getEnclos.getId(), intervention.getDateDebut(), intervention.getDateFin())){
+        if (enclosService.enclosVide(intervention.getEnclos().getId(), intervention.getDateDebut(), intervention.getDateFin())){
             //TODO vérifier que l'on récupère bien le bon enclos avec la methode getEnclo (voir classe Intervention)
             return ResultatValidation.valide();
         } else {

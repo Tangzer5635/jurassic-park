@@ -28,7 +28,7 @@ public class Intervention extends AbstractPersistableWithIdSetter<Long> {
     @NotEmpty(message = "code ne doit pas être vide")
     @NotBlank(message = "code doit contenir des caractères lisibles")
     //F = NOURRISSAGE, N = NETTOYAGE, S= SURVEILLANCE, D= DÉPLACEMENT, M= SOIN_MÉDICAUX, C= CAPTURE_URGENTE
-    @Pattern(regexp = "^[FNSDMC]\\d{9}$", message = "Le code doit contenir une lettre puis 9 chiffres")
+    @Pattern(regexp = "^[FNSDMCE]\\d{9}$", message = "Le code doit contenir une lettre puis 9 chiffres")
     @Column(name = "code", length = 50, nullable = false)
     private String code;
 
