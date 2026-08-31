@@ -4,6 +4,8 @@ import net.ent.etnc.jurassicpark.controllers.commons.PageRequests;
 import net.ent.etnc.jurassicpark.dtos.EnclosDto;
 import net.ent.etnc.jurassicpark.dtos.assemblers.EnclosAssembler;
 import net.ent.etnc.jurassicpark.models.Enclos;
+import net.ent.etnc.jurassicpark.models.enumerations.EtatEnclos;
+import net.ent.etnc.jurassicpark.models.enumerations.TypeEnclos;
 import net.ent.etnc.jurassicpark.services.EnclosService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -12,9 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Collection;
 import java.util.Objects;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -32,76 +32,67 @@ public class EnclosController {
 
     @GetMapping("/")
     public ResponseEntity<Page<EnclosDto>> findAll(
+            @RequestParam(required = false) TypeEnclos type,
+            @RequestParam(required = false) EtatEnclos etat,
             @RequestParam(required = false, defaultValue = "1") Integer page,
             @RequestParam(required = false, defaultValue = "10") Integer size,
             @RequestParam(required = false, defaultValue = "id") String sort
     ) {
-        try {
-            Page<Enclos> enclos = this.enclosService.findAll(PageRequests.of(page, size, sort));
-            return ResponseEntity.ok(enclos.map(enclosAssembler::toDto));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
+        Pageable pageable = PageRequests.of(page, size, sort);
+
+        Page<Enclos> enclos;
+        if (type != null) {
+            enclos = this.enclosService.findAllByType(type, pageable);
+        } else if (etat != null) {
+            enclos = this.enclosService.findAllByEtat(etat, pageable);
+        } else {
+            enclos = this.enclosService.findAll(pageable);
         }
+
+        return ResponseEntity.ok(enclos.map(enclosAssembler::toDto));
     }
 
     @GetMapping("/{id}/")
     public ResponseEntity<EnclosDto> findById(@PathVariable Long id) {
-        try {
-            Optional<Enclos> optionalEnclos = this.enclosService.findById(id);
-            return optionalEnclos
-                    .map(enclosAssembler::toDto)
-                    .map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return this.enclosService.findById(id)
+                .map(enclosAssembler::toDto)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(HttpStatus.NOT_FOUND).build());
     }
 
     @PostMapping("/")
     public ResponseEntity<EnclosDto> create(@RequestBody EnclosDto enclosDto) {
-        try {
-            if (Objects.isNull(enclosDto)) {
-                return ResponseEntity.badRequest().build();
-            }
-            if (Objects.nonNull(enclosDto.getId())) {
-                return ResponseEntity.badRequest().build();
-            }
-            Enclos enclos = this.enclosService.create(this.enclosAssembler.toEntity(enclosDto));
-            return ResponseEntity.status(HttpStatus.CREATED).body(this.enclosAssembler.toDto(enclos));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
+        if (Objects.isNull(enclosDto)) {
+            return ResponseEntity.badRequest().build();
         }
+        if (Objects.nonNull(enclosDto.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        Enclos enclos = this.enclosService.create(this.enclosAssembler.toEntity(enclosDto));
+        return ResponseEntity.status(HttpStatus.CREATED).body(this.enclosAssembler.toDto(enclos));
     }
 
     @PutMapping("/{id}/")
     public ResponseEntity<EnclosDto> update(@PathVariable Long id, @RequestBody EnclosDto enclosDto) {
-        try {
-            if (Objects.isNull(enclosDto)) {
-                return ResponseEntity.badRequest().build();
-            }
-            if (!id.equals(enclosDto.getId())) {
-                return ResponseEntity.badRequest().build();
-            }
-            if (!this.enclosService.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            Enclos enclos = this.enclosService.update(this.enclosAssembler.toEntity(enclosDto));
-            return ResponseEntity.ok(this.enclosAssembler.toDto(enclos));
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
+        if (Objects.isNull(enclosDto)) {
+            return ResponseEntity.badRequest().build();
         }
+        if (!id.equals(enclosDto.getId())) {
+            return ResponseEntity.badRequest().build();
+        }
+        if (!this.enclosService.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        Enclos enclos = this.enclosService.update(this.enclosAssembler.toEntity(enclosDto));
+        return ResponseEntity.ok(this.enclosAssembler.toDto(enclos));
     }
 
     @DeleteMapping("/{id}/")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        try {
-            if (!this.enclosService.existsById(id)) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-            }
-            this.enclosService.deleteById(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
-        } catch (Exception ex) {
-            return ResponseEntity.internalServerError().build();
+        if (!this.enclosService.existsById(id)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+        this.enclosService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
