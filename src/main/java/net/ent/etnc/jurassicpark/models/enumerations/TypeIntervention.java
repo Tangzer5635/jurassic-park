@@ -6,6 +6,7 @@ public enum TypeIntervention {
     NETTOYAGE(NiveauHabilitation.JUNIOR),
     SURVEILLANCE(NiveauHabilitation.CONFIRME),
     DEPLACEMENT(NiveauHabilitation.CONFIRME),
+    EQUARRISSAGE(NiveauHabilitation.CONFIRME),
     SOIN_MEDICAL(NiveauHabilitation.EXPERT),
     CAPTURE_URGENTE(NiveauHabilitation.ELITE);
 

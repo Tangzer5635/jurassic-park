@@ -1,56 +1,42 @@
 package net.ent.etnc.jurassicpark.services.impl;
 
-import net.ent.etnc.jurassicpark.business.rules.AnimalDisponible;
 import net.ent.etnc.jurassicpark.models.Animal;
 import net.ent.etnc.jurassicpark.repositories.AnimalRepository;
-import net.ent.etnc.jurassicpark.repositories.InterventionRepository;
 import net.ent.etnc.jurassicpark.services.AnimalService;
-import net.ent.etnc.jurassicpark.services.InterventionService;
 import net.ent.etnc.jurassicpark.services.commons.AbstractService;
-import net.ent.etnc.jurassicpark.services.commons.ServiceException;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Service
 public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository> implements AnimalService {
 
-    private final InterventionService interventionService;
-
     @Autowired
-    public AnimalServiceImpl(AnimalRepository animalRepository,
-                             @Lazy InterventionService interventionService) {
+    public AnimalServiceImpl(AnimalRepository animalRepository) {
         super(animalRepository);
-        this.interventionService = interventionService;
     }
 
     @Override
-    @Transactional(readOnly = true)
     public boolean animalEstDisponible(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
-        return this.repository.animalEstLibre(id, dateDebut, dateFin);
+
+        // dans le service intervention, récupérer toutes les interventions de cet animal qui ne sont pas finis avant le début de celle-ci
+
+        // vérifier que les autres interventions ne commencent pas avant la fin de celle-ci
+
+        return false;
     }
 
     @Override
-    @Transactional(readOnly = true)
-    public boolean existeParEspece(Long especeId) {
-        return this.repository.existsByEspeceId(especeId);
-    }
+    public Set<Animal> getAnimauxEnclosApresInterventionsPlanifiees(Long idEnclos) {
 
-    @Override
-    @Transactional(readOnly = true)
-    public boolean existeParEnclos(Long enclosId) {
-        return this.repository.existsByEnclosId(enclosId);
-    }
+        //récupérer les animaux présents dans l'enclos
 
-    @Override
-    @Transactional
-    public void deleteById(Long id) throws ServiceException {
-        if (this.interventionService.animalUtilise(id)) {
-            throw new ServiceException("Animal encore rattaché à des interventions");
-        }
-        super.deleteById(id);
+        //récupérer les déplacements vers cet enclos
+
+        //ajouter tous les animaux déplacés vers cet enclos dans le set
+
+        return null;
     }
 }
