@@ -15,6 +15,4 @@ public enum ErreurValidation {
     ENCLOS_TROP_PETIT,
     MANIPULATION_ANIMAL_MORT,
     SECURTE_INSUFFISANTE
-
-    //TODO : ajouter d'autres erreurs
 }

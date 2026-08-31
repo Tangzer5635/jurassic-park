@@ -21,6 +21,5 @@ public class EspeceResponseDto {
     private String nom;
     private Dangerosite dangerosite;
     private Alimentation alimentation;
-    private List<EnclosDto> enclos;
     private TypeEspece type;
 }
