@@ -2,12 +2,18 @@ package net.ent.etnc.jurassicpark.business.commons;
 
 public enum ErreurValidation {
 
+    AUCUN_ANIMAL,
+    AUCUN_ENCLOS,
+    AUCUN_PERSONNEL,
     PERSONNEL_NON_QUALIFIE,
     PERSONNEL_NON_DISPONIBLE,
     ANIMAL_NON_DISPONIBLE,
     ANIMAUX_INCOMPATIBLES,
+    ENCLOS_INACTIF,
     ENCLOS_INCOMPATIBLE,
     ENCLOS_NON_VIDE,
+    ENCLOS_TROP_PETIT,
+    MANIPULATION_ANIMAL_MORT,
     SECURTE_INSUFFISANTE
 
     //TODO : ajouter d'autres erreurs

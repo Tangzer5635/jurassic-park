@@ -7,6 +7,8 @@ import net.ent.etnc.jurassicpark.services.commons.AbstractService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository> implements EnclosService {
 
@@ -16,7 +18,7 @@ public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository>
     }
 
     @Override
-    public boolean enclosVide(Long id) {
+    public boolean enclosVide(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
         return false;
     }
 }

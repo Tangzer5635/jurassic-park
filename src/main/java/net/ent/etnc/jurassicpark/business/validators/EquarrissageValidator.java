@@ -8,32 +8,23 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
-public class DeplacementValidator {
+public class EquarrissageValidator {
 
     private final AnimalPresent animalPresent;
-    private final ManipulationVivants manipVivants;
-    private final AnimalDisponible animalDisponible;
-    private final AnimauxCompatibles animauxCompatibles;
-    private final EnclosDestinationCompatible enclosCompatible;
+    private final ManipulationMorts manipMorts;
     private final PersonnelPresent personnelPresent;
     private final PersonnelQualifie personnelQualifie;
     private final PersonnelDisponible personnelDisponible;
 
-    public DeplacementValidator(
+    public EquarrissageValidator(
             AnimalPresent animalPresent,
-            ManipulationVivants manipVivants,
-            AnimalDisponible animalDisponible,
-            AnimauxCompatibles animauxCompatibles,
-            EnclosDestinationCompatible enclosCompatible,
+            ManipulationMorts manipMorts,
             PersonnelPresent personnelPresent,
             PersonnelQualifie personnelQualifie,
             PersonnelDisponible personnelDisponible) {
 
         this.animalPresent = animalPresent;
-        this.manipVivants = manipVivants;
-        this.animalDisponible = animalDisponible;
-        this.animauxCompatibles = animauxCompatibles;
-        this.enclosCompatible = enclosCompatible;
+        this.manipMorts = manipMorts;
         this.personnelPresent = personnelPresent;
         this.personnelQualifie = personnelQualifie;
         this.personnelDisponible = personnelDisponible;
@@ -44,14 +35,10 @@ public class DeplacementValidator {
     ) {
         return ResultatValidation.combiner(List.of(
                 animalPresent.verifier(intervention.getAnimals()),
-                manipVivants.verifier(intervention.getAnimals()),
-                animalDisponible.verifier(intervention),
-                animauxCompatibles.verifier(intervention),
-                enclosCompatible.verifier(intervention),
+                manipMorts.verifier(intervention.getAnimals()),
                 personnelPresent.verifier(intervention.getPersonnels()),
                 personnelQualifie.verifier(intervention),
                 personnelDisponible.verifier(intervention)
-                )
-        );
+        ));
     }
 }

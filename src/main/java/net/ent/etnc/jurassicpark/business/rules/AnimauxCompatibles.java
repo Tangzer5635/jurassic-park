@@ -3,78 +3,107 @@ package net.ent.etnc.jurassicpark.business.rules;
 import net.ent.etnc.jurassicpark.business.commons.ErreurValidation;
 import net.ent.etnc.jurassicpark.business.commons.ResultatValidation;
 import net.ent.etnc.jurassicpark.models.Animal;
+import net.ent.etnc.jurassicpark.models.Espece;
+import net.ent.etnc.jurassicpark.models.Intervention;
 import net.ent.etnc.jurassicpark.models.enumerations.Alimentation;
 import net.ent.etnc.jurassicpark.models.enumerations.Dangerosite;
+import net.ent.etnc.jurassicpark.services.AnimalService;
 import org.springframework.stereotype.Component;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 @Component
 public class AnimauxCompatibles {
 
+    private final AnimalService animalService;
+
+    public AnimauxCompatibles(AnimalService animalService) {
+        this.animalService = animalService;
+    }
+
     public ResultatValidation verifier(
-            Animal animal,
-            List<Animal> animauxEnclos
+            Intervention intervention
     ) {
+
+        Set<Animal> animauxDeplaces = intervention.getAnimals();
+        Set<Animal> animauxEnclos = animalService.getAnimauxEnclosApresInterventionsPlanifiees(intervention.getEnclos().getId());
+        //TODO vérifier que l'on récupère bien le bon enclos avec la methode getEnclos (voir classe Intervention)
+
+        if ((animauxDeplaces.size() + animauxEnclos.size()) > intervention.getEnclos().getCapaciteMax) {    //TODO vérifier le if
+            return ResultatValidation.invalide(ErreurValidation.ENCLOS_TROP_PETIT);
+        }
+
+        if (animauxDeplaces.isEmpty()) {
+            return ResultatValidation.valide();
+        }
+
         if (animauxEnclos.isEmpty()) {
             return ResultatValidation.valide();
         }
 
-        if (!animauxEnclos.getFirst().getEspece().equals(animal.getEspece())
-                && animal.getEspece().getDangerosite().equals(Dangerosite.CRITIQUE)) {
-            return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
+        Set<Espece> especesDeplacees = new HashSet<>();
+        Set<Espece> especesEnclos = new HashSet<>();
+
+        for (Animal a : animauxDeplaces) {
+            especesDeplacees.add(a.getEspece());
+        }
+        for (Animal a : animauxEnclos) {
+            especesEnclos.add(a.getEspece());
         }
 
-        return switch (animal.getEspece().getAlimentation()) {
-            case OMNIVORE, CARNIVORE -> verifierCompatibiliteCarnivore(animal, animauxEnclos);
-            case HERBIVORE -> verifierCompatibiliteHerbivore(animal, animauxEnclos);
-        };
-    }
-
-    private ResultatValidation verifierCompatibiliteCarnivore(Animal animal, List<Animal> animauxEnclos) {
-
-        for (Animal a : animauxEnclos) {
-
-            if (!a.getEspece().equals(animal.getEspece()) &&
-                    (a.getEspece().getAlimentation().equals(Alimentation.CARNIVORE)
-                            || a.getEspece().getAlimentation().equals(Alimentation.OMNIVORE)
-                            || a.getEspece().getDangerosite().equals(Dangerosite.CRITIQUE)) ) {
-
+        for (Espece espece : especesEnclos) {
+            if (espece.getDangerosite().equals(Dangerosite.CRITIQUE) && !especesDeplacees.contains(espece)) {
                 return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
             }
+        }
 
-            if (a.getEspece().getDangerosite().getNiveauDangerosite()
-                <= animal.getEspece().getDangerosite().getNiveauDangerosite()) {
+        for (Espece espece : especesDeplacees) {
 
-                return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
+            if (!especesEnclos.contains(espece)) {
+
+                if (espece.getDangerosite().equals(Dangerosite.CRITIQUE)) {
+                    return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
+                }
+
+                switch (espece.getAlimentation()) {
+
+                    case OMNIVORE, CARNIVORE -> {
+
+                        for (Espece e : especesEnclos) {
+
+                            if ((e.getAlimentation().equals(Alimentation.CARNIVORE)
+                                    || e.getAlimentation().equals(Alimentation.OMNIVORE))) {
+
+                                return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
+                            }
+
+                            if (e.getDangerosite().getNiveauDangerosite()
+                                    <= espece.getDangerosite().getNiveauDangerosite()) {
+
+                                return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
+                            }
+                        }
+                    }
+
+                    case HERBIVORE -> {
+
+                        for (Espece e : especesEnclos) {
+
+                            if ((e.getAlimentation().equals(Alimentation.CARNIVORE)
+                                    || e.getAlimentation().equals(Alimentation.OMNIVORE))
+                                    && e.getDangerosite().getNiveauDangerosite() >= espece.getDangerosite().getNiveauDangerosite()) {
+
+                                return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
+                            }
+
+                        }
+                    }
+
+                }
             }
         }
 
         return ResultatValidation.valide();
     }
-
-    private ResultatValidation verifierCompatibiliteHerbivore(Animal animal, List<Animal> animauxEnclos) {
-
-        for (Animal a : animauxEnclos) {
-
-            if (!a.getEspece().equals(animal.getEspece())
-                    && a.getEspece().getDangerosite().equals(Dangerosite.CRITIQUE)) {
-                return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
-            }
-
-            if ( (a.getEspece().getAlimentation().equals(Alimentation.CARNIVORE)
-                    || a.getEspece().getAlimentation().equals(Alimentation.OMNIVORE))
-                && a.getEspece().getDangerosite().getNiveauDangerosite() >= animal.getEspece().getDangerosite().getNiveauDangerosite() ) {
-
-                return ResultatValidation.invalide(ErreurValidation.ANIMAUX_INCOMPATIBLES);
-            }
-
-
-        }
-
-        return ResultatValidation.valide();
-    }
-
-
-
 }
