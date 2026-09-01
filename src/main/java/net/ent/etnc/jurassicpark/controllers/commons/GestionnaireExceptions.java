@@ -8,6 +8,8 @@ import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.time.LocalDateTime;
 import java.util.Map;
@@ -50,6 +52,16 @@ public class GestionnaireExceptions {
     public ResponseEntity<Map<String, Object>> technique(Exception ex) {
         ex.printStackTrace();
         return corps(HttpStatus.INTERNAL_SERVER_ERROR, "Erreur interne");
+    }
+
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<Map<String, Object>> ressourceInexistante(NoResourceFoundException ex) {
+        return corps(HttpStatus.NOT_FOUND, "Ressource inexistante");
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    public ResponseEntity<Map<String, Object>> parametreInvalide(MethodArgumentTypeMismatchException ex) {
+        return corps(HttpStatus.BAD_REQUEST, "Valeur invalide pour le paramètre " + ex.getName());
     }
 
     private ResponseEntity<Map<String, Object>> corps(HttpStatus statut, String message) {

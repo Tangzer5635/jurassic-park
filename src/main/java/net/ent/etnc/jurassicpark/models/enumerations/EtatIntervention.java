@@ -1,9 +1,9 @@
 package net.ent.etnc.jurassicpark.models.enumerations;
 
 public enum EtatIntervention {
-    PLANIFIEES,
+    PLANIFIEE,
     EN_COURS,
-    TERMINES,
+    TERMINEE,
     ANNULEE;
 
     public boolean peutDevenir(EtatIntervention cible) {
@@ -11,9 +11,9 @@ public enum EtatIntervention {
             return true;
         }
         return switch (this) {
-            case PLANIFIEES -> cible == EN_COURS || cible == ANNULEE;
-            case EN_COURS -> cible == TERMINES || cible == ANNULEE;
-            case TERMINES, ANNULEE -> false;
+            case PLANIFIEE -> cible == EN_COURS || cible == ANNULEE;
+            case EN_COURS -> cible == TERMINEE || cible == ANNULEE;
+            case TERMINEE, ANNULEE -> false;
         };
     }
 }

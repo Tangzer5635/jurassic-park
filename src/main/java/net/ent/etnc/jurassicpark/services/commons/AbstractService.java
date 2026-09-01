@@ -1,5 +1,6 @@
 package net.ent.etnc.jurassicpark.services.commons;
 
+import jakarta.validation.ConstraintViolationException;
 import net.ent.etnc.jurassicpark.models.commons.AbstractPersistableWithIdSetter;
 import net.ent.etnc.jurassicpark.repositories.commons.BaseRepository;
 import org.springframework.data.domain.Page;
@@ -38,8 +39,10 @@ public class AbstractService<T extends AbstractPersistableWithIdSetter<Long>, R 
     public T create(T entity) throws ServiceException {
         try {
             return repository.save(entity);
+        } catch (ConstraintViolationException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ServiceException("Erreur lors de la sauvegarde", e);
+            throw new ServiceException("Erreur lors de la création", e);
         }
     }
 
@@ -54,8 +57,10 @@ public class AbstractService<T extends AbstractPersistableWithIdSetter<Long>, R 
         }
         try {
             return repository.save(entity);
+        } catch (ConstraintViolationException e) {
+            throw e;
         } catch (Exception e) {
-            throw new ServiceException("Erreur lors de la mise à jour", e);
+            throw new ServiceException("Erreur lors de la mise a jour", e);
         }
     }
 
