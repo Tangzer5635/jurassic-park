@@ -24,11 +24,13 @@ public interface AnimalRepository extends BaseRepository<Animal> {
         FROM Intervention i
         JOIN i.animals a
         WHERE a.id = :animalId
-          AND i.etat <> net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.ANNULEE
+          AND i.etat NOT IN (net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.ANNULEE,
+                             net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.TERMINEE)
+          AND i.id <> :interventionId
           AND i.dateDebut < :dateFin
           AND i.dateFin > :dateDebut
         """)
-    boolean animalEstLibre(@Param("animalId") Long animalId, @Param("dateDebut") LocalDateTime dateDebut, @Param("dateFin") LocalDateTime dateFin);
+    boolean animalEstLibre(@Param("animalId") Long animalId, @Param("interventionId") Long interventionId, @Param("dateDebut") LocalDateTime dateDebut, @Param("dateFin") LocalDateTime dateFin);
 
     boolean existsByEspeceId(Long especeId);
     boolean existsByEnclosId(Long enclosId);

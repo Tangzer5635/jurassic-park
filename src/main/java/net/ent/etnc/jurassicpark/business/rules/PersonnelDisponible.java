@@ -21,7 +21,7 @@ public class PersonnelDisponible {
     ) {
 
         for (Personnel p : intervention.getPersonnels()) {
-            if (!personnelService.personnelEstDisponible(p.getId(), intervention.getDateDebut(), intervention.getDateFin())) {
+            if (!personnelService.personnelEstDisponible(p.getId(), intervention.getId(), intervention.getDateDebut(), intervention.getDateFin())) {
                 return ResultatValidation.invalide(ErreurValidation.PERSONNEL_NON_DISPONIBLE);
             }
         }
