@@ -81,6 +81,7 @@ public class InterventionServiceImpl extends AbstractService<Intervention, Inter
         switch (intervention.getType()) {
             case DEPLACEMENT -> animalService.deplacerAnimaux(intervention.getAnimals(), intervention.getEnclos());
             case EQUARRISSAGE -> animalService.deplacerCadavres(intervention.getAnimals());
+            case SOIN_MEDICAL -> animalService.soignerAnimal(intervention.getAnimals());
         }
     }
 
