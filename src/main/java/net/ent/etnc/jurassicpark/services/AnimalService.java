@@ -16,7 +16,7 @@ public interface AnimalService extends Service<Animal, Long> {
 
     boolean animalEstDisponible(Long animalId, Long interventionId, @NotNull(message = "dateDebut ne doit pas être null") LocalDateTime dateDebut, @NotNull(message = "dateFin ne doit pas être null") LocalDateTime dateFin);
 
-    Set<Animal> getAnimauxEnclosApresInterventionsPlanifiees(Long idEnclos);
+    Set<Animal> getAnimauxEnclosApresInterventionsPlanifiees(Long idEnclos, Long idIntervention);
 
     boolean existeParEnclos(Long enclosId);
 

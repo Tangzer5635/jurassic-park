@@ -27,7 +27,7 @@ public class AnimauxCompatibles {
     ) {
 
         Set<Animal> animauxDeplaces = intervention.getAnimals();
-        Set<Animal> animauxEnclos = animalService.getAnimauxEnclosApresInterventionsPlanifiees(intervention.getEnclos().getId());
+        Set<Animal> animauxEnclos = animalService.getAnimauxEnclosApresInterventionsPlanifiees(intervention.getEnclos().getId(), intervention.getId());
 
         if ((animauxDeplaces.size() + animauxEnclos.size()) > intervention.getEnclos().getCapaciteMax()) {
             return ResultatValidation.invalide(ErreurValidation.ENCLOS_TROP_PETIT);

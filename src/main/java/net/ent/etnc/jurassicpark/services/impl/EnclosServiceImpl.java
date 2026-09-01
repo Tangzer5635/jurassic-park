@@ -43,8 +43,8 @@ public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository>
 
     @Override
     @Transactional(readOnly = true)
-    public boolean enclosVide(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
-        return this.animalService.getAnimauxEnclosApresInterventionsPlanifiees(id).isEmpty();
+    public boolean enclosVide(Long idEnclos) {
+        return this.repository.enclosEstVide(idEnclos);
     }
 
     @Override
