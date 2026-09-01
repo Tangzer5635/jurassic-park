@@ -41,7 +41,7 @@ public class EnclosDestinationCompatible {
             if (animal.getEspece().getDangerosite().getSecuriteMinimaleRequise().getSecuriteEnclos()
                     > enclos.getNiveauSecurite().getSecuriteEnclos()) {
 
-                return ResultatValidation.invalide(ErreurValidation.SECURTE_INSUFFISANTE);
+                return ResultatValidation.invalide(ErreurValidation.SECURITE_INSUFFISANTE);
             }
 
             switch (animal.getEspece().getType()) {

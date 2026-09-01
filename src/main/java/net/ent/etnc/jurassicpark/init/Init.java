@@ -296,10 +296,10 @@ public class Init implements CommandLineRunner {
     private EtatIntervention etatIntervention(LocalDateTime debut, LocalDateTime fin) {
         LocalDateTime maintenant = LocalDateTime.now();
         if (fin.isBefore(maintenant)) {
-            return EtatIntervention.TERMINES;
+            return EtatIntervention.TERMINEE;
         }
         if (debut.isAfter(maintenant)) {
-            return EtatIntervention.PLANIFIEES;
+            return EtatIntervention.PLANIFIEE;
         }
         return EtatIntervention.EN_COURS;
     }
@@ -307,11 +307,15 @@ public class Init implements CommandLineRunner {
     /** 2 soigneurs au niveau requis, tournants pour éviter les conflits de planning. */
     private List<Personnel> habilites(TypeIntervention type, int compteur) {
         int requis = type.getNiveauMinimumRequis().getNiveauHabilitationInt();
+        int nombre = type.getNombreMinimumPersonnel();
         List<Personnel> candidats = this.personnels.stream()
                 .filter(personnel -> personnel.getNiveauHabilitation().getNiveauHabilitationInt() >= requis)
                 .toList();
 
-        int debut = compteur % candidats.size();
-        return List.of(candidats.get(debut), candidats.get((debut + 1) % candidats.size()));
+        List<Personnel> resultat = new ArrayList<>();
+        for (int i = 0; i < nombre; i++) {
+            resultat.add(candidats.get((compteur + i) % candidats.size()));
+        }
+        return resultat;
     }
 }

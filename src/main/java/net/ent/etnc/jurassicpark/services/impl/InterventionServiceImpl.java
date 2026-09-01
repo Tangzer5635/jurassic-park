@@ -53,7 +53,7 @@ public class InterventionServiceImpl extends AbstractService<Intervention, Inter
                 .orElseThrow(() -> new ServiceException("Intervention introuvable"))
                 .getEtat();
 
-        if (actuel == EtatIntervention.TERMINES || actuel == EtatIntervention.ANNULEE) {
+        if (actuel == EtatIntervention.TERMINEE || actuel == EtatIntervention.ANNULEE) {
             throw new ServiceException("Intervention terminée ou annulée, non modifiable");
         }
         if (!actuel.peutDevenir(intervention.getEtat())) {

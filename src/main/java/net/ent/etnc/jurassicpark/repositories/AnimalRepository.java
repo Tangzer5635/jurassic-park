@@ -39,7 +39,7 @@ public interface AnimalRepository extends BaseRepository<Animal> {
         FROM Intervention i
         JOIN i.animals a
         WHERE i.enclos.id = :enclosId
-          AND i.etat IN (net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.PLANIFIEES,
+          AND i.etat IN (net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.PLANIFIEE,
                          net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.EN_COURS)
         """)
     Set<Animal> findAllDeplacesVers(@Param("enclosId") Long enclosId);
