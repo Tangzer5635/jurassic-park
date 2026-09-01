@@ -32,27 +32,32 @@ public class EnclosDestinationCompatible {
 
         for (Animal animal : animaux) {
 
-            if ((animal.getEtatSante().equals(EtatSante.BLESSE) || animal.getEtatSante().equals(EtatSante.MALADE))
-                    && !enclos.getType().equals(TypeEnclos.QUARANTAINE)) {
-
-                return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
-            }
-
             if (animal.getEspece().getDangerosite().getSecuriteMinimaleRequise().getSecuriteEnclos()
                     > enclos.getNiveauSecurite().getSecuriteEnclos()) {
 
                 return ResultatValidation.invalide(ErreurValidation.SECURITE_INSUFFISANTE);
             }
 
-            switch (animal.getEspece().getType()) {
-                case AQUATIQUE -> {
-                    if (!enclos.getType().equals(TypeEnclos.AQUATIQUE)) return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
-                }
-                case TERRESTRE -> {
-                    if (!enclos.getType().equals(TypeEnclos.TERRESTRE)) return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
-                }
-                case VOLANT -> {
-                    if (!enclos.getType().equals(TypeEnclos.VOLIERE)) return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+            if ((animal.getEtatSante().equals(EtatSante.BLESSE) || animal.getEtatSante().equals(EtatSante.MALADE))
+                    && !enclos.getType().equals(TypeEnclos.QUARANTAINE)) {
+
+                return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+            }
+
+            if (!(animal.getEtatSante().equals(EtatSante.BLESSE) || animal.getEtatSante().equals(EtatSante.MALADE))) {
+                switch (animal.getEspece().getType()) {
+                    case AQUATIQUE -> {
+                        if (!enclos.getType().equals(TypeEnclos.AQUATIQUE))
+                            return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+                    }
+                    case TERRESTRE -> {
+                        if (!enclos.getType().equals(TypeEnclos.TERRESTRE))
+                            return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+                    }
+                    case VOLANT -> {
+                        if (!enclos.getType().equals(TypeEnclos.VOLIERE))
+                            return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+                    }
                 }
             }
         }
