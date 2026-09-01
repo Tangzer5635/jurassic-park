@@ -61,7 +61,7 @@ public class InterventionServiceImpl extends AbstractService<Intervention, Inter
         }
         controler(intervention);
 
-        if (intervention.getEtat() == EtatIntervention.TERMINES) {
+        if (intervention.getEtat() == EtatIntervention.TERMINEE) {
             effectuerIntervention(intervention);
         }
 
