@@ -59,4 +59,8 @@ public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository>
         return this.repository.findAllByEtat(etat, pageable);
     }
 
+    @Override
+    public Enclos findByAnimalId(Long id) {
+        return this.repository.findByAnimalId(id);
+    }
 }

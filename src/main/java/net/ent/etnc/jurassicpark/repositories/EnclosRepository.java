@@ -23,4 +23,7 @@ public interface EnclosRepository extends BaseRepository<Enclos> {
     Page<Enclos> findAllByEtat(EtatEnclos etat, Pageable pageable);
 
     boolean existsByType(TypeEnclos type);
+
+    @Query("SELECT e FROM Animal a JOIN a.enclos e WHERE a.id = :id")
+    Enclos findByAnimalId(Long id);
 }

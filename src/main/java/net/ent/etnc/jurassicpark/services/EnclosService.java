@@ -17,4 +17,6 @@ public interface EnclosService extends Service<Enclos, Long> {
     Page<Enclos> findAllByType(TypeEnclos type, Pageable pageable);
 
     Page<Enclos> findAllByEtat(EtatEnclos etat, Pageable pageable);
+
+    Enclos findByAnimalId(Long id);
 }
