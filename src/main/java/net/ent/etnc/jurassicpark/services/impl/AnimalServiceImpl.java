@@ -108,4 +108,12 @@ public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository>
     public Page<Animal> findAllByEtatSante(EtatSante etatSante, Pageable pageable) {
         return this.repository.findAllByEtatSante(etatSante, pageable);
     }
+
+    @Override
+    public void soignerAnimal(Set<Animal> animals) {
+        for (Animal animal : animals) {
+            animal.setEtatSante(EtatSante.EN_BONNE_SANTE);
+            this.repository.save(animal);
+        }
+    }
 }
