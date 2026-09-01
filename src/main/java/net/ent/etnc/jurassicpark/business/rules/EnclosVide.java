@@ -18,7 +18,7 @@ public class EnclosVide {
     public ResultatValidation verifier(
             Intervention intervention
     ) {
-        if (enclosService.enclosVide(intervention.getEnclos().getId(), intervention.getDateDebut(), intervention.getDateFin())){
+        if (enclosService.enclosVide(intervention.getEnclos().getId())){
             return ResultatValidation.valide();
         } else {
             return ResultatValidation.invalide(ErreurValidation.ENCLOS_NON_VIDE);

@@ -16,9 +16,6 @@ import java.util.Set;
 @Repository
 public interface AnimalRepository extends BaseRepository<Animal> {
 
-    @Query("SELECT COUNT(a) = 0 FROM Animal a WHERE a.enclos.id = :enclosId")
-    boolean enclosEstVide(@Param("enclosId") Long enclosId);
-
     @Query("""
         SELECT COUNT(i) = 0
         FROM Intervention i
@@ -41,10 +38,11 @@ public interface AnimalRepository extends BaseRepository<Animal> {
         FROM Intervention i
         JOIN i.animals a
         WHERE i.enclos.id = :enclosId
+          AND i.id <> :interventionId
           AND i.etat IN (net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.PLANIFIEE,
                          net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.EN_COURS)
         """)
-    Set<Animal> findAllDeplacesVers(@Param("enclosId") Long enclosId);
+    Set<Animal> findAllDeplacesVers(@Param("enclosId") Long enclosId, @Param("interventionId") Long interventionId);
 
     Set<Animal> findAllByEnclosId(Long enclosId);
 

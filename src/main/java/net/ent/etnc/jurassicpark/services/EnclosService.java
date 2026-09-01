@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 
 public interface EnclosService extends Service<Enclos, Long> {
 
-    boolean enclosVide(Long id, @NotNull(message = "dateDebut ne doit pas être null") LocalDateTime dateDebut, @NotNull(message = "dateFin ne doit pas être null") LocalDateTime dateFin);
+    boolean enclosVide(Long idEnclos);
 
     Page<Enclos> findAllByType(TypeEnclos type, Pageable pageable);
 

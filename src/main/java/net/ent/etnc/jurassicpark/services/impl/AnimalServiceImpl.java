@@ -45,9 +45,9 @@ public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository>
 
     @Override
     @Transactional(readOnly = true)
-    public Set<Animal> getAnimauxEnclosApresInterventionsPlanifiees(Long idEnclos) {
+    public Set<Animal> getAnimauxEnclosApresInterventionsPlanifiees(Long idEnclos, Long idIntervention) {
         Set<Animal> resultat = new HashSet<>(this.repository.findAllByEnclosId(idEnclos));
-        resultat.addAll(this.repository.findAllDeplacesVers(idEnclos));
+        resultat.addAll(this.repository.findAllDeplacesVers(idEnclos, idIntervention));
         return resultat;
     }
 
