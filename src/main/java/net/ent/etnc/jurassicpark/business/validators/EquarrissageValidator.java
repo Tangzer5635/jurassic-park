@@ -11,6 +11,7 @@ import java.util.List;
 public class EquarrissageValidator {
 
     private final AnimalPresent animalPresent;
+    private final AnimalDejaDansCimetiere animalDejaDansCimetiere;
     private final ManipulationMorts manipMorts;
     private final NombrePersonnelSuffisant nombrePersonnelSuffisant;
     private final PersonnelPresent personnelPresent;
@@ -19,6 +20,7 @@ public class EquarrissageValidator {
 
     public EquarrissageValidator(
             AnimalPresent animalPresent,
+            AnimalDejaDansCimetiere animalDejaDansCimetiere,
             ManipulationMorts manipMorts,
             NombrePersonnelSuffisant nombrePersonnelSuffisant,
             PersonnelPresent personnelPresent,
@@ -26,6 +28,7 @@ public class EquarrissageValidator {
             PersonnelDisponible personnelDisponible) {
 
         this.animalPresent = animalPresent;
+        this.animalDejaDansCimetiere = animalDejaDansCimetiere;
         this.manipMorts = manipMorts;
         this.nombrePersonnelSuffisant = nombrePersonnelSuffisant;
         this.personnelPresent = personnelPresent;
@@ -36,6 +39,7 @@ public class EquarrissageValidator {
     public ResultatValidation valider(Intervention intervention) {
         return ResultatValidation.combiner(List.of(
                 animalPresent.verifier(intervention.getAnimals()),
+                animalDejaDansCimetiere.verifier(intervention.getAnimals()),
                 manipMorts.verifier(intervention.getAnimals()),
                 nombrePersonnelSuffisant.verifier(intervention.getType(), intervention.getPersonnels().size()),
                 personnelPresent.verifier(intervention.getPersonnels()),
