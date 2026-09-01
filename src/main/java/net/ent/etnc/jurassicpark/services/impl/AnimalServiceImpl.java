@@ -6,6 +6,7 @@ import net.ent.etnc.jurassicpark.models.Enclos;
 import net.ent.etnc.jurassicpark.models.enumerations.EtatSante;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeEnclos;
 import net.ent.etnc.jurassicpark.repositories.AnimalRepository;
+import net.ent.etnc.jurassicpark.repositories.EnclosRepository;
 import net.ent.etnc.jurassicpark.services.AnimalService;
 import net.ent.etnc.jurassicpark.services.EnclosService;
 import net.ent.etnc.jurassicpark.services.InterventionService;
@@ -27,13 +28,13 @@ public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository>
 
     private final InterventionService interventionService;
 
-    private final EnclosService enclosService;
+    private final EnclosRepository enclosRepository;
 
     @Autowired
-    public AnimalServiceImpl(AnimalRepository animalRepository, @Lazy InterventionService interventionService, @Lazy EnclosService enclosService) {
+    public AnimalServiceImpl(AnimalRepository animalRepository, @Lazy InterventionService interventionService, @Lazy EnclosRepository enclosRepository) {
         super(animalRepository);
         this.interventionService = interventionService;
-        this.enclosService = enclosService;
+        this.enclosRepository = enclosRepository;
     }
 
     @Override
@@ -65,7 +66,7 @@ public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository>
     @Override
     @Transactional
     public void deplacerCadavres(Set<Animal> animals) {
-        Enclos cimetiere = this.enclosService.getEnclosCimetiere();
+        Enclos cimetiere = enclosRepository.getEnclosByTypeEquals(TypeEnclos.CIMETIERE);
         for (Animal animal : animals) {
             animal.setEnclos(cimetiere);
             this.repository.save(animal);

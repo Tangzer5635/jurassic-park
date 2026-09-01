@@ -16,4 +16,6 @@ public interface EnclosRepository extends BaseRepository<Enclos> {
     Page<Enclos> findAllByType(TypeEnclos type, Pageable pageable);
 
     Page<Enclos> findAllByEtat(EtatEnclos etat, Pageable pageable);
+
+    boolean existsByType(TypeEnclos type);
 }
