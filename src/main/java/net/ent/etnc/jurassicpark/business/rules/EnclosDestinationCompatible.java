@@ -44,10 +44,17 @@ public class EnclosDestinationCompatible {
                 return ResultatValidation.invalide(ErreurValidation.SECURITE_INSUFFISANTE);
             }
 
-//            if (!animal.getEspece().getEnclos().contains(enclos)) { //TODO vérifier le type d'enclos autoriser -> changer Espece ou faire un switch?
-//
-//                return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
-//            }
+            switch (animal.getEspece().getType()) {
+                case AQUATIQUE -> {
+                    if (!enclos.getType().equals(TypeEnclos.AQUATIQUE)) return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+                }
+                case TERRESTRE -> {
+                    if (!enclos.getType().equals(TypeEnclos.TERRESTRE)) return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+                }
+                case VOLANT -> {
+                    if (!enclos.getType().equals(TypeEnclos.VOLIERE)) return ResultatValidation.invalide(ErreurValidation.ENCLOS_INCOMPATIBLE);
+                }
+            }
         }
 
         return ResultatValidation.valide();
