@@ -4,7 +4,6 @@ import net.ent.etnc.jurassicpark.business.commons.ResultatValidation;
 import net.ent.etnc.jurassicpark.business.validators.InterventionValidator;
 import net.ent.etnc.jurassicpark.models.Intervention;
 import net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention;
-import net.ent.etnc.jurassicpark.models.enumerations.TypeEnclos;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeIntervention;
 import net.ent.etnc.jurassicpark.repositories.InterventionRepository;
 import net.ent.etnc.jurassicpark.services.AnimalService;

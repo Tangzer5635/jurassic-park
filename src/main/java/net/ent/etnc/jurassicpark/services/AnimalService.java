@@ -33,4 +33,6 @@ public interface AnimalService extends Service<Animal, Long> {
     Page<Animal> findAllByEtatSante(EtatSante etatSante, Pageable pageable);
 
     void soignerAnimal(Set<Animal> animals);
+
+    boolean existsByEspeceId(Long id);
 }

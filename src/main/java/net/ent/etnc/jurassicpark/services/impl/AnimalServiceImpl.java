@@ -1,12 +1,9 @@
 package net.ent.etnc.jurassicpark.services.impl;
 
-import net.ent.etnc.jurassicpark.business.commons.ResultatValidation;
 import net.ent.etnc.jurassicpark.models.Animal;
 import net.ent.etnc.jurassicpark.models.Enclos;
 import net.ent.etnc.jurassicpark.models.enumerations.EtatSante;
-import net.ent.etnc.jurassicpark.models.enumerations.TypeEnclos;
 import net.ent.etnc.jurassicpark.repositories.AnimalRepository;
-import net.ent.etnc.jurassicpark.repositories.EnclosRepository;
 import net.ent.etnc.jurassicpark.services.AnimalService;
 import net.ent.etnc.jurassicpark.services.EnclosService;
 import net.ent.etnc.jurassicpark.services.InterventionService;
@@ -27,14 +24,13 @@ import java.util.Set;
 public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository> implements AnimalService {
 
     private final InterventionService interventionService;
-
-    private final EnclosRepository enclosRepository;
+    private final EnclosService enclosService;
 
     @Autowired
-    public AnimalServiceImpl(AnimalRepository animalRepository, @Lazy InterventionService interventionService, @Lazy EnclosRepository enclosRepository) {
+    public AnimalServiceImpl(AnimalRepository animalRepository, @Lazy InterventionService interventionService, EnclosService enclosService) {
         super(animalRepository);
         this.interventionService = interventionService;
-        this.enclosRepository = enclosRepository;
+        this.enclosService = enclosService;
     }
 
     @Override
@@ -66,7 +62,7 @@ public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository>
     @Override
     @Transactional
     public void deplacerCadavres(Set<Animal> animals) {
-        Enclos cimetiere = enclosRepository.getEnclosByTypeEquals(TypeEnclos.CIMETIERE);
+        Enclos cimetiere = enclosService.getCimetiere();
         for (Animal animal : animals) {
             animal.setEnclos(cimetiere);
             this.repository.save(animal);
@@ -115,5 +111,10 @@ public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository>
             animal.setEtatSante(EtatSante.EN_BONNE_SANTE);
             this.repository.save(animal);
         }
+    }
+
+    @Override
+    public boolean existsByEspeceId(Long id) {
+        return this.repository.existsByEspeceId(id);
     }
 }
