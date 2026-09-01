@@ -18,11 +18,13 @@ public interface PersonnelRepository extends BaseRepository<Personnel> {
         SELECT COUNT(i) = 0 FROM Intervention i
         JOIN i.personnels p
         WHERE p.id = :personnelId
-          AND i.etat <> net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.ANNULEE
+          AND i.etat NOT IN (net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.ANNULEE,
+                             net.ent.etnc.jurassicpark.models.enumerations.EtatIntervention.TERMINEE)
+          AND i.id <> :interventionId
           AND i.dateDebut < :dateFin
           AND i.dateFin > :dateDebut
         """)
-    boolean personnelEstLibre(@Param("personnelId") Long personnelId, @Param("dateDebut") LocalDateTime dateDebut, @Param("dateFin") LocalDateTime dateFin);
+    boolean personnelEstLibre(@Param("personnelId") Long personnelId, @Param("interventionId") Long interventionId, @Param("dateDebut") LocalDateTime dateDebut, @Param("dateFin") LocalDateTime dateFin);
 
     Page<Personnel> findAllByNiveauHabilitation(NiveauHabilitation niveau, Pageable pageable);
 }

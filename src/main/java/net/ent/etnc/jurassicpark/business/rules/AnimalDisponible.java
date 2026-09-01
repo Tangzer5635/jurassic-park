@@ -7,8 +7,6 @@ import net.ent.etnc.jurassicpark.models.Intervention;
 import net.ent.etnc.jurassicpark.services.AnimalService;
 import org.springframework.stereotype.Component;
 
-import java.util.Set;
-
 @Component
 public class AnimalDisponible {
 
@@ -23,7 +21,7 @@ public class AnimalDisponible {
     ) {
 
         for (Animal a : intervention.getAnimals()) {
-            if (!animalService.animalEstDisponible(a.getId(), intervention.getDateDebut(), intervention.getDateFin())) {
+            if (!animalService.animalEstDisponible(a.getId(), intervention.getId(), intervention.getDateDebut(), intervention.getDateFin())) {
                 return ResultatValidation.invalide(ErreurValidation.ANIMAL_NON_DISPONIBLE);
             }
         }

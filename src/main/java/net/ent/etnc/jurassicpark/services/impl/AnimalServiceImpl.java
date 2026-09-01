@@ -39,8 +39,8 @@ public class AnimalServiceImpl extends AbstractService<Animal, AnimalRepository>
 
     @Override
     @Transactional(readOnly = true)
-    public boolean animalEstDisponible(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
-        return this.repository.animalEstLibre(id, dateDebut, dateFin);
+    public boolean animalEstDisponible(Long idAnimal, Long idIntervention, LocalDateTime dateDebut, LocalDateTime dateFin) {
+        return this.repository.animalEstLibre(idAnimal, idIntervention, dateDebut, dateFin);
     }
 
     @Override

@@ -30,8 +30,8 @@ public class PersonnelServiceImpl extends AbstractService<Personnel, PersonnelRe
 
     @Override
     @Transactional(readOnly = true)
-    public boolean personnelEstDisponible(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
-        return this.repository.personnelEstLibre(id, dateDebut, dateFin);
+    public boolean personnelEstDisponible(Long idPersonnel, Long idIntervention, LocalDateTime dateDebut, LocalDateTime dateFin) {
+        return this.repository.personnelEstLibre(idPersonnel, idIntervention, dateDebut, dateFin);
     }
 
     @Override
