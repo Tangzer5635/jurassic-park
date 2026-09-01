@@ -38,6 +38,11 @@ public class InterventionServiceImpl extends AbstractService<Intervention, Inter
     @Transactional
     public Intervention create(Intervention intervention) throws ServiceException {
         controler(intervention);
+
+        if (intervention.getEtat() == EtatIntervention.TERMINEE) {
+            effectuerIntervention(intervention);
+        }
+
         return super.create(intervention);
     }
 
@@ -57,10 +62,7 @@ public class InterventionServiceImpl extends AbstractService<Intervention, Inter
         controler(intervention);
 
         if (intervention.getEtat() == EtatIntervention.TERMINES) {
-            switch (intervention.getType()) {
-                case DEPLACEMENT -> animalService.deplacerAnimaux(intervention.getAnimals(), intervention.getEnclos());
-                case EQUARRISSAGE -> animalService.deplacerCadavres(intervention.getAnimals());
-            }
+            effectuerIntervention(intervention);
         }
 
         return super.update(intervention);
@@ -72,6 +74,13 @@ public class InterventionServiceImpl extends AbstractService<Intervention, Inter
             throw new ServiceException(resultat.erreurs().stream()
                     .map(Enum::name)
                     .collect(Collectors.joining(", ")));
+        }
+    }
+
+    private void effectuerIntervention(Intervention intervention) {
+        switch (intervention.getType()) {
+            case DEPLACEMENT -> animalService.deplacerAnimaux(intervention.getAnimals(), intervention.getEnclos());
+            case EQUARRISSAGE -> animalService.deplacerCadavres(intervention.getAnimals());
         }
     }
 
