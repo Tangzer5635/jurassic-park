@@ -31,9 +31,7 @@ public class InterventionValidator {
     }
 
     public ResultatValidation valider(Intervention intervention) {
-
         return switch (intervention.getType()) {
-
             case CAPTURE_URGENTE -> captureValidator.valider(intervention);
             case DEPLACEMENT -> deplacementValidator.valider(intervention);
             case EQUARRISSAGE -> equarrissageValidator.valider(intervention);

@@ -13,14 +13,16 @@ public class NourrissageSoinValidator {
     private final AnimalPresent animalPresent;
     private final ManipulationVivants manipVivants;
     private final AnimalDisponible animalDisponible;
+    private final NombrePersonnelSuffisant nombrePersonnelSuffisant;
     private final PersonnelPresent personnelPresent;
     private final PersonnelQualifie personnelQualifie;
     private final PersonnelDisponible personnelDisponible;
 
     public NourrissageSoinValidator(
-            AnimalDisponible animalDisponible,
-            ManipulationVivants manipVivants,
             AnimalPresent animalPresent,
+            ManipulationVivants manipVivants,
+            AnimalDisponible animalDisponible,
+            NombrePersonnelSuffisant nombrePersonnelSuffisant,
             PersonnelPresent personnelPresent,
             PersonnelQualifie personnelQualifie,
             PersonnelDisponible personnelDisponible) {
@@ -28,18 +30,18 @@ public class NourrissageSoinValidator {
         this.animalPresent = animalPresent;
         this.manipVivants = manipVivants;
         this.animalDisponible = animalDisponible;
+        this.nombrePersonnelSuffisant = nombrePersonnelSuffisant;
         this.personnelPresent = personnelPresent;
         this.personnelQualifie = personnelQualifie;
         this.personnelDisponible = personnelDisponible;
     }
 
-    public ResultatValidation valider(
-            Intervention intervention
-    ) {
+    public ResultatValidation valider(Intervention intervention) {
         return ResultatValidation.combiner(List.of(
                 animalPresent.verifier(intervention.getAnimals()),
                 manipVivants.verifier(intervention.getAnimals()),
                 animalDisponible.verifier(intervention),
+                nombrePersonnelSuffisant.verifier(intervention.getType(), intervention.getPersonnels().size()),
                 personnelPresent.verifier(intervention.getPersonnels()),
                 personnelQualifie.verifier(intervention),
                 personnelDisponible.verifier(intervention)
