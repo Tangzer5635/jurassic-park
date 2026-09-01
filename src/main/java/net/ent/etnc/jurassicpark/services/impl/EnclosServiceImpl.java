@@ -4,7 +4,6 @@ import net.ent.etnc.jurassicpark.models.Enclos;
 import net.ent.etnc.jurassicpark.models.enumerations.EtatEnclos;
 import net.ent.etnc.jurassicpark.models.enumerations.TypeEnclos;
 import net.ent.etnc.jurassicpark.repositories.EnclosRepository;
-import net.ent.etnc.jurassicpark.services.AnimalService;
 import net.ent.etnc.jurassicpark.services.EnclosService;
 import net.ent.etnc.jurassicpark.services.commons.AbstractService;
 import net.ent.etnc.jurassicpark.services.commons.ServiceException;
@@ -14,19 +13,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository> implements EnclosService {
 
-    private final AnimalService animalService;
-
     @Autowired
-    public EnclosServiceImpl(EnclosRepository enclosRepository, AnimalService animalService) {
+    public EnclosServiceImpl(EnclosRepository enclosRepository) {
         super(enclosRepository);
-        this.animalService = animalService;
     }
-
 
     @Override
     @Transactional
@@ -62,5 +55,11 @@ public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository>
     @Override
     public Enclos findByAnimalId(Long id) {
         return this.repository.findByAnimalId(id);
+    }
+
+
+    @Override
+    public Enclos getCimetiere() {
+        return this.repository.getEnclosByTypeEquals(TypeEnclos.CIMETIERE);
     }
 }
