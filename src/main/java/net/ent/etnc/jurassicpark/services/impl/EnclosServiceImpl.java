@@ -29,19 +29,22 @@ public class EnclosServiceImpl extends AbstractService<Enclos, EnclosRepository>
 
 
     @Override
-    @Transactional(readOnly = true)
-    public boolean enclosVide(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
-        return this.animalService.getAnimauxEnclosApresInterventionsPlanifiees(id).isEmpty();
+    @Transactional
+    public Enclos create(Enclos enclos) {
+        try {
+
+            if ((enclos.getType() == TypeEnclos.CIMETIERE) && repository.existsByType(TypeEnclos.CIMETIERE)) throw new ServiceException("il ne peut y avoir 2 cimetières");
+
+            return repository.save(enclos);
+        } catch (Exception e) {
+            throw new ServiceException("Erreur lors de la sauvegarde", e);
+        }
     }
 
     @Override
     @Transactional(readOnly = true)
-    public Enclos getEnclosCimetiere() {
-        Enclos cimetiere = this.repository.getEnclosByTypeEquals(TypeEnclos.CIMETIERE);
-        if (cimetiere == null) {
-            throw new ServiceException("Aucun enclos de type CIMETIERE configuré");
-        }
-        return cimetiere;
+    public boolean enclosVide(Long id, LocalDateTime dateDebut, LocalDateTime dateFin) {
+        return this.animalService.getAnimauxEnclosApresInterventionsPlanifiees(id).isEmpty();
     }
 
     @Override
