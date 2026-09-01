@@ -14,7 +14,7 @@ import java.util.Set;
 
 public interface AnimalService extends Service<Animal, Long> {
 
-    boolean animalEstDisponible(Long id, @NotNull(message = "dateDebut ne doit pas être null") LocalDateTime dateDebut, @NotNull(message = "dateFin ne doit pas être null") LocalDateTime dateFin);
+    boolean animalEstDisponible(Long animalId, Long interventionId, @NotNull(message = "dateDebut ne doit pas être null") LocalDateTime dateDebut, @NotNull(message = "dateFin ne doit pas être null") LocalDateTime dateFin);
 
     Set<Animal> getAnimauxEnclosApresInterventionsPlanifiees(Long idEnclos);
 

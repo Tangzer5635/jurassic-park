@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 public interface PersonnelService extends Service<Personnel, Long> {
 
-    boolean personnelEstDisponible(Long id, @NotNull(message = "dateDebut ne doit pas être null") LocalDateTime dateDebut, @NotNull(message = "dateFin ne doit pas être null") LocalDateTime dateFin);
+    boolean personnelEstDisponible(Long personnelId, Long interventionId, @NotNull(message = "dateDebut ne doit pas être null") LocalDateTime dateDebut, @NotNull(message = "dateFin ne doit pas être null") LocalDateTime dateFin);
 
     Page<Personnel> findAllByNiveauHabilitation(NiveauHabilitation niveau, Pageable pageable);
 }
